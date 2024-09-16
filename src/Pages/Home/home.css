@@ -3,13 +3,24 @@ body{
 }
 
 .agenda-grid{
+    /*
     display: grid;
-    grid-template:  1
-                    1;
+    grid-template:  1fr
+                    1fr;
+    */
+    display: flex;
+    flex-direction: column;
     width: 55vw;
     margin: auto;
     margin-top: 40px;
     margin-bottom: 0;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Alinha verticalmente no centro */
+    margin-bottom: 10px; /* Espaçamento entre o header e a tabela */
 }
 
 .agenda-table{
@@ -31,19 +42,20 @@ thead{
 }
 
 tbody {
-    display: table-row-group; /* Define o comportamento padrão do tbody */
+    display: table-row-group;
 }
 
 tr{
-    display: table-row; /* Define o comportamento padrão das linhas da tabela */
+    display: table-row;
 }
 
 thead > * > th {
-    padding: 15px 10px 15px 10px;
+    padding: 20px 10px 20px 10px;
+    font-size: 30px;
 }
 
 th{
-    font-size: 30px;
+    font-size: 25px;
     border: 1px solid black;
     height: 20px;
     padding: 10px;

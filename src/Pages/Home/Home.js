@@ -1,6 +1,8 @@
 import React from "react";
+import DatePicker from "react-date-picker";
+import 'react-date-picker/dist/DatePicker.css';
+import 'react-calendar/dist/Calendar.css';
 import "./home.css";
-
 
 const elementos = [
     {
@@ -115,7 +117,10 @@ function Home() {
     return(
         <div className= "home">
             <div className= "agenda-grid">
-                <h1>Agenda de hoje</h1>
+                <div className="header-container">
+                    <h1>Agenda de hoje</h1>
+                    <DatePicker label="Basic date picker" />
+                </div>
                 <div className= "agenda-table">
                     <table>
                         <thead>
