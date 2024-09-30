@@ -3,11 +3,6 @@ body{
 }
 
 .agenda-grid{
-    /*
-    display: grid;
-    grid-template:  1fr
-                    1fr;
-    */
     display: flex;
     flex-direction: column;
     width: 55vw;
@@ -26,14 +21,13 @@ body{
 .agenda-table{
     max-height: 70vh; /* Define a altura máxima do contêiner, ajuste conforme necessário */
     overflow-y: auto; /* Adiciona uma barra de rolagem se a tabela exceder a altura máxima */
-    
     background-color: #D9D9D9;
     border-radius: 5px;
 }
 
 table{
     width: 100%;
-    border: 1px solid black;
+    border: 1px solid #C2C2C2;
     border-collapse: collapse;
 }
 
@@ -56,7 +50,7 @@ thead > * > th {
 
 th{
     font-size: 25px;
-    border: 1px solid black;
+    border: 1px solid #C2C2C2;
     height: 20px;
     padding: 10px;
 }

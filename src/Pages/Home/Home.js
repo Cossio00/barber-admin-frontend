@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-date-picker";
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
+import api from "../../Services/api";
 import "./home.css";
 
+/*
 const elementos = [
     {
         "id": "001askwmaioq12tt21",
@@ -96,24 +98,55 @@ const elementos = [
         "status": "Pendente"
     }
 ]
+    */
 
 function Agenda(props){
-    const elements = props.elements;
-    
-    const listElements = elements.map((element) => 
-        <tr key={element.id}>
-            <th>{element.horario}</th>
-            <th className="clientName">{element.cliente}</th>
-            <th>{element.status}</th>
-        </tr>
-    )
+    const elements = props.elements.services;
+
+    if (!elements || elements.length === 0) {
+        return (
+            <tbody>
+                <tr>
+                    <td colSpan="3">Nenhum serviço encontrado</td>
+                </tr>
+            </tbody>
+        );
+    }
+
+    const listElements = elements.map((element) => {
+        
+        const horario = new Date(element.servicedate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
+        return(
+            <tr key={element.serviceid}>
+                <th>{horario}</th>
+                <th className="clientName">{element.serviceclientid}</th>
+                <th>OK</th>
+            </tr>
+        )
+    })
 
     return (
-        <tbody>{listElements}</tbody>
+            <tbody>{listElements}</tbody>
     )
 }
+    
 
 function Home() {
+
+    const [ service, setService ] = useState([]); 
+
+    useEffect(() => {
+        api
+            .get("/service")
+            .then((response) => {
+                setService(response.data);
+            })
+            .catch((err) => {
+                console.error("ops! ocorreu um erro: " + err);
+            });
+    }, []);
+
     return(
         <div className= "home">
             <div className= "agenda-grid">
@@ -130,7 +163,7 @@ function Home() {
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <Agenda  elements={elementos}></Agenda>
+                        <Agenda  elements={service} />
                     </table>
                 </div>
             </div>
