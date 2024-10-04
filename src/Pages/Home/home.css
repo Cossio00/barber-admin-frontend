@@ -14,13 +14,17 @@ body{
 .header-container {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* Alinha verticalmente no centro */
-    margin-bottom: 10px; /* Espaçamento entre o header e a tabela */
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.react-date-picker__clear-button {
+    display: none;
 }
 
 .agenda-table{
-    max-height: 70vh; /* Define a altura máxima do contêiner, ajuste conforme necessário */
-    overflow-y: auto; /* Adiciona uma barra de rolagem se a tabela exceder a altura máxima */
+    max-height: 70vh;
+    overflow-y: auto;
     background-color: #D9D9D9;
     border-radius: 5px;
 }
@@ -56,11 +60,11 @@ th{
 }
 
 th:nth-child(1), th:nth-child(3){
-    width: 25%; /* Proporção 1 */
+    width: 25%;
 }
 
 th:nth-child(2){
-    width: 50%; /* Proporção 2 */
+    width: 50%;
 }
 
 .clientName{

@@ -5,101 +5,6 @@ import 'react-calendar/dist/Calendar.css';
 import api from "../../Services/api";
 import "./home.css";
 
-/*
-const elementos = [
-    {
-        "id": "001askwmaioq12tt21",
-        "cliente": "José",
-        "horario": "18:00",
-        "status": "OK"
-    },
-    {
-        "id": "001askwmaioq12tt81",
-        "cliente": "Mario",
-        "horario": "18:30",
-        "status": "OK"
-    },
-    {
-        "id": "001askwmaioq12tt23",
-        "cliente": "Luisa",
-        "horario": "19:00",
-        "status": "OK"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    },
-    {
-        "id": "0089skwmaioq12tt23",
-        "cliente": "Luis",
-        "horario": "19:40",
-        "status": "Pendente"
-    }
-]
-    */
-
 function Agenda(props){
     const elements = props.elements.services;
 
@@ -120,7 +25,7 @@ function Agenda(props){
         return(
             <tr key={element.serviceid}>
                 <th>{horario}</th>
-                <th className="clientName">{element.serviceclientid}</th>
+                <th className="clientName">{element.clientname}</th>
                 <th>OK</th>
             </tr>
         )
@@ -135,6 +40,23 @@ function Agenda(props){
 function Home() {
 
     const [ service, setService ] = useState([]); 
+    const [ agendaDate, setAgendaDate ] = useState(new Date());
+
+    function formatDate(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Mês é indexado a partir de 0
+        return `${day}/${month}`;
+    }
+    
+    function isToday(date) {
+        const today = new Date();
+        return date.getDate() === today.getDate() &&
+               date.getMonth() === today.getMonth() &&
+               date.getFullYear() === today.getFullYear();
+    }
+    
+    const title = isToday(agendaDate) ? "Agenda de Hoje" : `Agenda de ${formatDate(agendaDate)}`;
+    
 
     useEffect(() => {
         api
@@ -151,8 +73,8 @@ function Home() {
         <div className= "home">
             <div className= "agenda-grid">
                 <div className="header-container">
-                    <h1>Agenda de hoje</h1>
-                    <DatePicker label="Basic date picker" />
+                    <h1>{title}</h1>
+                    <DatePicker label="Basic date picker" value={agendaDate} onChange={(date) => setAgendaDate(date)} locale="pt-br" format="dd/MM/yy"/>
                 </div>
                 <div className= "agenda-table">
                     <table>
