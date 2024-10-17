@@ -12,7 +12,7 @@ function Agenda(props){
         return (
             <tbody>
                 <tr>
-                    <td colSpan="3">Nenhum serviço encontrado</td>
+                    <td colSpan="3">Nenhum serviço agendado para esta data.</td>
                 </tr>
             </tbody>
         );
@@ -60,14 +60,16 @@ function Home() {
 
     useEffect(() => {
         api
-            .get("/service")
+            .post("/service-agenda", {
+                date: `${agendaDate.getFullYear()}-${agendaDate.getMonth()+1}-${agendaDate.getDate()}`
+            })
             .then((response) => {
                 setService(response.data);
             })
             .catch((err) => {
                 console.error("ops! ocorreu um erro: " + err);
             });
-    }, []);
+    }, [agendaDate]);
 
     return(
         <div className= "home">
