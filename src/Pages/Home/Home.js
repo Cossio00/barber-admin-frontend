@@ -12,7 +12,7 @@ function Agenda(props){
         return (
             <tbody>
                 <tr>
-                    <td colSpan="3">Nenhum serviço agendado para esta data.</td>
+                    <th colSpan="4">Nenhum serviço agendado para esta data.</th>
                 </tr>
             </tbody>
         );
@@ -24,9 +24,13 @@ function Agenda(props){
 
         return(
             <tr key={element.serviceid}>
-                <th>{horario}</th>
+                <th className="serviceDate">{horario}</th>
                 <th className="clientName">{element.clientname}</th>
-                <th>OK</th>
+                <th className="serviceStatus">OK</th>
+                <th className="serviceActions">
+                    <ion-icon className="editService" name="pencil-outline"></ion-icon>
+                    <ion-icon className="deleteService" name="close-outline"></ion-icon>
+                </th>
             </tr>
         )
     })
@@ -75,6 +79,10 @@ function Home() {
         <div className= "home">
             <div className= "agenda-grid">
                 <div className="header-container">
+                    <h1></h1>
+                    <input type="button" value="Agendar"></input>
+                </div>
+                <div className="header-container">
                     <h1>{title}</h1>
                     <DatePicker label="Basic date picker" value={agendaDate} onChange={(date) => setAgendaDate(date)} locale="pt-br" format="dd/MM/yy"/>
                 </div>
@@ -85,6 +93,7 @@ function Home() {
                                 <th>Horário</th>
                                 <th className="clientName">Cliente</th>
                                 <th>Status</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <Agenda  elements={service} />
