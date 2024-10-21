@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-date-picker";
-import { Dialog } from "@mui/material";
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import api from "../../Services/api";
 import "./home.css";
+//import { Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 
 
 function Home() {
@@ -12,7 +16,6 @@ function Home() {
     const [ service, setService ] = useState([]); 
     const [ agendaDate, setAgendaDate ] = useState(new Date());
     
-
     const title = isToday(agendaDate) ? "Agenda de Hoje" : `Agenda de ${formatDate(agendaDate)}`;    
     
     useEffect(() => {
@@ -39,7 +42,7 @@ function Home() {
                             <th className="serviceStatus">OK</th>
                             <th className="serviceActions">
                                 <ion-icon className="editService" name="pencil-outline"></ion-icon>
-                                <ion-icon className="deleteService" name="close-outline" onClick={handleDeleteClick}></ion-icon>
+                                <ion-icon className="deleteService" name="close-outline"></ion-icon>
                             </th>
                         </tr>  
                     </tbody>          
@@ -66,20 +69,20 @@ function Home() {
                                 <th>Ações</th>
                             </tr>
                         </thead>
-                        {console.log(service)}
                             {service.length > 0 ? listElements : (
-                            <tbody><tr>
+                            <tbody>
+                                <tr>
                                 <th colSpan="4">Nenhum serviço agendado para esta data.</th>
-                            </tr></tbody>
+                            </tr>
+                            </tbody>
                             )}
+                            {/*<Dialog open={false}>
+                                <DialogTitle></DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText>Deseja remover este serviço da agenda?</DialogContentText>
+                                </DialogContent>
+                            </Dialog>*/}
                     </table>
-                    {showAlert && (
-                    <div className="custom-alert">
-                        <p>Você tem certeza que deseja excluir o serviço de {selectedService?.clientname}?</p>
-                        <button onClick={closeAlert}>Cancelar</button>
-                        <button onClick={confirmDelete}>Confirmar</button>
-                    </div>
-                    )}
                 </div>
             </div>
         </div>
