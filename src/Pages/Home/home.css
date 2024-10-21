@@ -85,3 +85,47 @@ ion-icon{
 ion-icon:nth-child(2){
     color: red;
 }
+
+-- -----------------------------------------------Alerta
+.custom-alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 20px;
+    background-color: white;
+    border: 2px solid #C2C2C2;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 1000;
+}
+
+.custom-alert p {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #333;
+}
+
+.custom-alert button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-alert button:first-of-type {
+    background-color: #f44336;
+    color: white;
+}
+
+.custom-alert button:last-of-type {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.custom-alert button:hover {
+    opacity: 0.8;
+}
