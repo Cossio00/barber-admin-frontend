@@ -4,18 +4,39 @@ import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import api from "../../Services/api";
 import "./home.css";
-//import { Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
+import { Dialog, DialogContent, DialogContentText, Button, DialogActions } from "@mui/material";
 
 
 function Home() {
 
     const [ service, setService ] = useState([]); 
     const [ agendaDate, setAgendaDate ] = useState(new Date());
+    const [ open, setOpen ] = useState(false)
+    const [ serviceID, setServiceID ] = useState("");
     
+    const handleClickOpen = (id) => {
+        setOpen(true);
+        setServiceID(id);
+        console.log(serviceID);
+    };
+    
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleDelete = (id) => {
+        api
+            .delete(`/service/${id}`)
+            .then((response) => {
+                console.log(response.status);
+                handleClose();
+                setService((prevItems) => prevItems.filter((item) => item.serviceid !== id));
+                setServiceID("");
+            }).catch((err) => {
+                console.error("ops! ocorreu um erro: " + err);
+            });
+    }
+
     const title = isToday(agendaDate) ? "Agenda de Hoje" : `Agenda de ${formatDate(agendaDate)}`;    
     
     useEffect(() => {
@@ -42,7 +63,7 @@ function Home() {
                             <th className="serviceStatus">OK</th>
                             <th className="serviceActions">
                                 <ion-icon className="editService" name="pencil-outline"></ion-icon>
-                                <ion-icon className="deleteService" name="close-outline"></ion-icon>
+                                <ion-icon className="deleteService" name="close-outline" onClick={() => handleClickOpen(element.serviceid)}></ion-icon>
                             </th>
                         </tr>  
                     </tbody>          
@@ -76,12 +97,15 @@ function Home() {
                             </tr>
                             </tbody>
                             )}
-                            {/*<Dialog open={false}>
-                                <DialogTitle></DialogTitle>
+                            {<Dialog open={open}>
                                 <DialogContent>
                                     <DialogContentText>Deseja remover este serviço da agenda?</DialogContentText>
                                 </DialogContent>
-                            </Dialog>*/}
+                                <DialogActions>
+                                    <Button onClick={()=> handleDelete(serviceID)}>Sim</Button>
+                                    <Button onClick={handleClose}>Não</Button>
+                                </DialogActions>
+                            </Dialog>}
                     </table>
                 </div>
             </div>
