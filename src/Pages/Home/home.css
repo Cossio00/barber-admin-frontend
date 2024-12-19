@@ -17,6 +17,7 @@ body {
 }
 
 .header-container > input {
+    margin-left: auto; /* Isso empurra o input para o lado direito */
     width: 125px;
     height: 50px;
     font-size: 23px;
