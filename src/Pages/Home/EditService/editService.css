@@ -10,3 +10,13 @@
     background-color: #D9D9D9;
     border-radius: 5px;
 }
+
+form{
+    display: grid;
+}
+
+form div{
+    width: fit-content;
+    max-width: 200px;
+    margin-top: 6px;
+}

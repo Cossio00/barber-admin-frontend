@@ -79,7 +79,7 @@ function Home() {
         <div className= "home">
             <div className= "agenda-grid">
                 <div className="header-container">
-                    <input colSpan="2" type="button" value="Agendar"></input>
+                    <input colSpan="2" type="button" value="Agendar"  onClick={() => navigate("/create-service")}></input>
                 </div>
                 <div className="header-container">
                     <h1>{title}</h1>
