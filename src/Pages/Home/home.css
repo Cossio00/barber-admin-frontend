@@ -85,6 +85,10 @@ th:nth-child(1), th:nth-child(6) {
     text-align: left;
 }
 
+.totalValue{
+    border: 0px;
+}
+
 ion-icon{
     margin: 0px 15px 0px 15px;
     font-size: 26px;
