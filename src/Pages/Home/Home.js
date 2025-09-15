@@ -66,6 +66,8 @@ function Home() {
                         <tr>
                             <th className="serviceDate">{horario}</th>
                             <th className="clientName">{element.clientname}</th>
+                            <th className="serviceDescription">{element.servicecategory}</th>
+                            <th className="serviceValue">{element.categoryvalue}</th>
                             <th className="serviceStatus">OK</th>
                             <th className="serviceActions">
                                 <ion-icon className="editService" name="pencil-outline" onClick={() => handleEdit(element.serviceid)}></ion-icon>
@@ -91,6 +93,8 @@ function Home() {
                             <tr>
                                 <th>Horário</th>
                                 <th className="clientName">Cliente</th>
+                                <th>Serviço</th>
+                                <th>Valor</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
@@ -98,7 +102,7 @@ function Home() {
                             {service.length > 0 ? listElements : (
                             <tbody>
                                 <tr>
-                                <th colSpan="4">Nenhum serviço agendado para esta data.</th>
+                                <th colSpan="6">Nenhum serviço agendado para esta data.</th>
                             </tr>
                             </tbody>
                             )}
