@@ -108,7 +108,7 @@ function User() {
                                     variant="outlined"
                                     color="primary"
                                     style={{ marginLeft: "5px" }}
-                                    onClick={() => navigate(`/edit-client/${client.clientid}`)}
+                                    onClick={() => navigate(`/edit-user/${client.clientid}`)}
                                 >
                                     Editar
                                 </Button>
