@@ -5,6 +5,7 @@ import 'react-calendar/dist/Calendar.css';
 import api from "../../Services/api";
 import "./home.css";
 import { Dialog, DialogContent, DialogContentText, Button, DialogActions } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 
 function Home() {
@@ -14,10 +15,15 @@ function Home() {
     const [ open, setOpen ] = useState(false)
     const [ serviceID, setServiceID ] = useState("");
     
+    const navigate = useNavigate();
+
+    const handleEdit = (serviceId) => {
+        navigate(`/edit-service/${serviceId}`);
+    };
+
     const handleClickOpen = (id) => {
         setOpen(true);
         setServiceID(id);
-        console.log(serviceID);
     };
     
     const handleClose = () => {
@@ -57,12 +63,14 @@ function Home() {
     
             return(
                     <tbody>
-                        <tr key={element.serviceid}>
+                        <tr>
                             <th className="serviceDate">{horario}</th>
                             <th className="clientName">{element.clientname}</th>
+                            <th className="serviceDescription">{element.servicecategory}</th>
+                            <th className="serviceValue">{element.categoryvalue}</th>
                             <th className="serviceStatus">OK</th>
                             <th className="serviceActions">
-                                <ion-icon className="editService" name="pencil-outline"></ion-icon>
+                                <ion-icon className="editService" name="pencil-outline" onClick={() => handleEdit(element.serviceid)}></ion-icon>
                                 <ion-icon className="deleteService" name="close-outline" onClick={() => handleClickOpen(element.serviceid)}></ion-icon>
                             </th>
                         </tr>  
@@ -73,8 +81,7 @@ function Home() {
         <div className= "home">
             <div className= "agenda-grid">
                 <div className="header-container">
-                    <h1></h1>
-                    <input type="button" value="Agendar"></input>
+                    <input colSpan="2" type="button" value="Agendar"  onClick={() => navigate("/create-service")}></input>
                 </div>
                 <div className="header-container">
                     <h1>{title}</h1>
@@ -86,6 +93,8 @@ function Home() {
                             <tr>
                                 <th>Horário</th>
                                 <th className="clientName">Cliente</th>
+                                <th>Serviço</th>
+                                <th>Valor</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
@@ -93,7 +102,7 @@ function Home() {
                             {service.length > 0 ? listElements : (
                             <tbody>
                                 <tr>
-                                <th colSpan="4">Nenhum serviço agendado para esta data.</th>
+                                <th colSpan="6">Nenhum serviço agendado para esta data.</th>
                             </tr>
                             </tbody>
                             )}
