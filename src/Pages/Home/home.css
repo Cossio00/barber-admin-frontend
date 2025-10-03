@@ -1,7 +1,14 @@
 body {
-    background-color: #EEEEEE;
+    background-color: #383838;
 }
+/*
+black: 21201f
+dark-gray: 383838
+medium-gray: 5f605d
+light-gray: 727271
+orange: ef6817
 
+*/
 .agenda-grid {
     display: flex;
     flex-direction: column;
@@ -21,20 +28,32 @@ body {
     width: 125px;
     height: 50px;
     font-size: 23px;
-    background-color: #006000;
+    background-color: #ef6817;
     color: white;
     border-radius: 10px;
     cursor: pointer;
 }
 
-.react-date-picker__clear-button {
-    display: none;
+h1, tr, th{
+    color: #ffffff;
+}
+
+.custom-date-picker {
+  width: 150px; 
+}
+
+.custom-date-picker .MuiInputBase-input,
+.custom-date-picker label,
+.custom-date-picker svg,
+.custom-date-picker fieldset {
+  color: white;
+  border-color: white;
 }
 
 .agenda-table {
     max-height: 70vh;
     overflow-y: auto;
-    background-color: #D9D9D9;
+    background-color: #727271;
     border-radius: 5px;
 }
 
@@ -83,6 +102,10 @@ th:nth-child(1), th:nth-child(6) {
 
 .clientName {
     text-align: left;
+}
+
+.totalValue{
+    border: 0px;
 }
 
 ion-icon{

@@ -1,0 +1,52 @@
+.create-service {
+  display: flex;
+  justify-content: center;
+}
+
+.create-service-form-grid {
+  width: 60vw;
+}
+
+form{
+    background-color: #5f605d;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.select-client{
+    width: 200px;
+}
+
+.select-client svg,
+.select-client .MuiSelect-select,
+.select-client .MuiOutlinedInput-notchedOutline,
+.select-client .Mui-focused
+{
+    color: white;
+    border-color: white;
+}             
+
+.select-category{
+    width: 200px;
+}
+
+.select-category svg,
+.select-category .MuiSelect-select,
+.select-category .MuiOutlinedInput-notchedOutline,
+.select-category .Mui-focused
+{
+    color: white;
+    border-color: white;
+}  
+
+#date-picker-id {
+  width: 200px; 
+}
+.create-service-button{ 
+    margin: auto;
+    margin-top: 20px;
+    background-color: #ef6817;
+    color: white;
+    width: 300px;
+}
+

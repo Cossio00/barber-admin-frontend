@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import DatePicker from "react-date-picker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
+import { ptBR } from "date-fns/locale";
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import api from "../../Services/api";
@@ -58,6 +60,11 @@ function Home() {
             });
     }, [agendaDate]);
 
+    const totalValue = service.reduce(
+        (acc, item) => acc + Number(item.categoryvalue || 0),
+        0
+    );
+
     const listElements = service.map((element) => {
         const horario = new Date(element.servicedate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     
@@ -85,7 +92,11 @@ function Home() {
                 </div>
                 <div className="header-container">
                     <h1>{title}</h1>
-                    <DatePicker label="Basic date picker" value={agendaDate} onChange={(date) => setAgendaDate(date)} locale="pt-br" format="dd/MM/yy"/>
+                    <LocalizationProvider dateAdapter={AdapterDateFns} locale={ptBR}>
+                        <DatePicker  label="Data" value={agendaDate} onChange={(date) => setAgendaDate(date)} locale="pt-br" format="dd/MM/yy"
+                            className= "custom-date-picker"
+                        />
+                    </LocalizationProvider>
                 </div>
                 <div className= "agenda-table">
                     <table>
@@ -105,6 +116,15 @@ function Home() {
                                 <th colSpan="6">Nenhum serviço agendado para esta data.</th>
                             </tr>
                             </tbody>
+                            )}
+
+                            {service.length > 0 && (
+                                <tfoot>
+                                    <tr>
+                                        <th colSpan="3" style={{ textAlign: "right" }}>Total</th>
+                                        <th className="totalValue">{totalValue}</th>
+                                    </tr>
+                                </tfoot>
                             )}
                             {<Dialog open={open}>
                                 <DialogContent>
