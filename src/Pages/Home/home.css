@@ -34,16 +34,20 @@ orange: ef6817
     cursor: pointer;
 }
 
-h1 {
+h1, tr, th{
     color: #ffffff;
 }
 
-.react-date-picker {
-  color: #ffffff;
+.custom-date-picker {
+  width: 150px; 
 }
 
-.react-date-picker__clear-button {
-    display: none;
+.custom-date-picker .MuiInputBase-input,
+.custom-date-picker label,
+.custom-date-picker svg,
+.custom-date-picker fieldset {
+  color: white;
+  border-color: white;
 }
 
 .agenda-table {

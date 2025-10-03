@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import DatePicker from "react-date-picker";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
+import { ptBR } from "date-fns/locale";
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import api from "../../Services/api";
@@ -90,7 +92,11 @@ function Home() {
                 </div>
                 <div className="header-container">
                     <h1>{title}</h1>
-                    <DatePicker label="Basic date picker" value={agendaDate} onChange={(date) => setAgendaDate(date)} locale="pt-br" format="dd/MM/yy"/>
+                    <LocalizationProvider dateAdapter={AdapterDateFns} locale={ptBR}>
+                        <DatePicker  label="Data" value={agendaDate} onChange={(date) => setAgendaDate(date)} locale="pt-br" format="dd/MM/yy"
+                            className= "custom-date-picker"
+                        />
+                    </LocalizationProvider>
                 </div>
                 <div className= "agenda-table">
                     <table>

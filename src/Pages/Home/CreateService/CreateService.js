@@ -3,6 +3,7 @@ import api from "../../../Services/api";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { ptBR } from "date-fns/locale";
+import "./createService.css"
 import { Button, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -67,19 +68,13 @@ function CreateService() {
 
         <form onSubmit={handleSubmit}>
           <FormControl fullWidth margin="normal">
-            <InputLabel id="client-label" sx={{ color: "white" }}>
+            <InputLabel id="client-label" sx={{ color: "white" }} shrink>
               Cliente
             </InputLabel>
-            <Select
+            <Select className="select-client"
               value={selectedClient}
               onChange={(e) => setSelectedClient(e.target.value)}
               required
-              sx={{
-                color: "white", 
-                svg: { color: "white" },
-                ".MuiOutlinedInput-notchedOutline": { borderColor: "white" }, // borda
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "white" }, // borda focada
-              }}
             >
               {clients.length === 0 ? (
                 <MenuItem value="" disabled>Nenhum cliente disponível</MenuItem>
@@ -94,17 +89,11 @@ function CreateService() {
           </FormControl>
 
           <FormControl fullWidth margin="normal">
-            <InputLabel id="category-label" sx={{ color: "white" }}>Categoria</InputLabel>
-            <Select
+            <InputLabel id="category-label" sx={{ color: "white" }} shrink>Categoria</InputLabel>
+            <Select className="select-category"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               required
-              sx={{
-              color: "white", 
-              svg: { color: "white" },
-              ".MuiOutlinedInput-notchedOutline": { borderColor: "white" }, // borda
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "white" }, // borda focada
-            }}
             >
               {categories.length === 0 ? (
                 <MenuItem value="" disabled>Nenhuma categoria disponível</MenuItem>
@@ -120,36 +109,28 @@ function CreateService() {
 
           <LocalizationProvider dateAdapter={AdapterDateFns} locale={ptBR}>
             <DatePicker label="Data" value={selectedDate} onChange={(date) => setSelectedDate(date)} format="dd/MM/yyyy" 
-            slotProps={{
-              textField: {
-                sx: {
-                  input: { color: "white" },           // texto branco
-                  label: { color: "white" },           // label branco
-                  svg: { color: "white" },             // ícone do calendário branco
-                  fieldset: { borderColor: "white" },  // borda branca
+              className= "custom-date-picker"
+              slotProps={{
+                textField: {
+                  id: "date-picker-id"
                 },
-              },
-            }}
+              }}
             />
             <TimePicker label="Horário" value={selectedTime} onChange={(time) => setSelectedTime(time)} 
-            slotProps={{
-              textField: {
-                sx: {
-                  input: { color: "white" },           // texto branco
-                  label: { color: "white" },           // label branco
-                  svg: { color: "white" },             // ícone do calendário branco
-                  fieldset: { borderColor: "white" },  // borda branca
+              className= "custom-date-picker"
+              slotProps={{
+                textField: {
+                  id: "date-picker-id"
                 },
-              },
-            }}
+              }}
             />
           </LocalizationProvider>
 
           <Button
+            className="create-service-button"
             type="submit"
             variant="contained"
             color="primary"
-            style={{ marginTop: "20px", backgroundColor: "#ef6817", color: "white" }}
             disabled={!selectedClient || !selectedCategory}
           >
             Salvar Serviço
