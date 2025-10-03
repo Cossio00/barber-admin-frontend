@@ -6,26 +6,6 @@ import { ptBR } from "date-fns/locale";
 import { Button, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-function extractArray(data) {
-  // Normaliza os formatos mais comuns vindos da API para um array
-  if (!data) return [];
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data.data)) return data.data;        // ex.: { data: [...] }
-  if (Array.isArray(data.rows)) return data.rows;        // ex.: { rows: [...] }
-  if (Array.isArray(data.clients)) return data.clients;  // ex.: { clients: [...] }
-  if (Array.isArray(data.categories)) return data.categories;
-  if (Array.isArray(data.list)) return data.list;
-  // tenta extrair o primeiro array encontrado em um objeto
-  for (const v of Object.values(data)) {
-    if (Array.isArray(v)) return v;
-  }
-  return [];
-}
-
-function formatSQLDate(d) {
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
 
 function CreateService() {
   const [clients, setClients] = useState([]);
@@ -34,29 +14,17 @@ function CreateService() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(new Date());
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    let mounted = true;
-    async function load() {
-      try {
-        const [clientsRes, categoriesRes] = await Promise.all([api.get("/client"), api.get("/category")]);
-        console.log("GET /client response:", clientsRes.data);
-        console.log("GET /category response:", categoriesRes.data);
+    api.get("/client")
+      .then((res) => setClients(res.data.list ?? res.data.clients ?? []))
+      .catch((err) => console.error("Erro ao carregar clientes:", err));
 
-        const clientsArray = extractArray(clientsRes.data);
-        const categoriesArray = extractArray(categoriesRes.data);
-
-        if (mounted) {
-          setClients(clientsArray);
-          setCategories(categoriesArray);
-        }
-      } catch (err) {
-        console.error("Erro ao carregar clients/categories:", err);
-      }
-    }
-    load();
-    return () => { mounted = false; };
+    api.get("/category")
+      .then((res) => setCategories(res.data.list ?? res.data.categories ?? []))
+      .catch((err) => console.error("Erro ao carregar categorias:", err));
   }, []);
 
   const handleSubmit = async (e) => {
@@ -76,7 +44,8 @@ function CreateService() {
       selectedTime.getSeconds ? selectedTime.getSeconds() : 0
     );
 
-    const formattedDate = formatSQLDate(serviceDate);
+    const pad = (n) => String(n).padStart(2, "0");
+    const formattedDate = `${serviceDate.getFullYear()}-${pad(serviceDate.getMonth() + 1)}-${pad(serviceDate.getDate())} ${pad(serviceDate.getHours())}:${pad(serviceDate.getMinutes())}:${pad(serviceDate.getSeconds())}`;
 
     try {
       await api.post("/service", {
@@ -84,11 +53,10 @@ function CreateService() {
         servicedate: formattedDate,
         servicecategoryid: parseInt(selectedCategory, 10),
       });
-      alert("Serviço criado com sucesso!");
       navigate("/home");
     } catch (err) {
       console.error("Erro ao criar serviço:", err);
-      alert("Ocorreu um erro ao criar o serviço.");
+      alert("Erro ao criar serviço.");
     }
   };
 
@@ -99,19 +67,26 @@ function CreateService() {
 
         <form onSubmit={handleSubmit}>
           <FormControl fullWidth margin="normal">
-            <InputLabel id="client-label">Cliente</InputLabel>
+            <InputLabel id="client-label" sx={{ color: "white" }}>
+              Cliente
+            </InputLabel>
             <Select
-              labelId="client-label"
               value={selectedClient}
               onChange={(e) => setSelectedClient(e.target.value)}
               required
+              sx={{
+                color: "white", 
+                svg: { color: "white" },
+                ".MuiOutlinedInput-notchedOutline": { borderColor: "white" }, // borda
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "white" }, // borda focada
+              }}
             >
               {clients.length === 0 ? (
                 <MenuItem value="" disabled>Nenhum cliente disponível</MenuItem>
               ) : (
                 clients.map((client) => (
-                  <MenuItem key={client.clientid ?? client.id} value={client.clientid ?? client.id}>
-                    {client.clientname ?? client.name ?? "Cliente sem nome"}
+                  <MenuItem key={client.clientid} value={client.clientid}>
+                    {client.clientname}
                   </MenuItem>
                 ))
               )}
@@ -119,19 +94,24 @@ function CreateService() {
           </FormControl>
 
           <FormControl fullWidth margin="normal">
-            <InputLabel id="category-label">Categoria</InputLabel>
+            <InputLabel id="category-label" sx={{ color: "white" }}>Categoria</InputLabel>
             <Select
-              labelId="category-label"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               required
+              sx={{
+              color: "white", 
+              svg: { color: "white" },
+              ".MuiOutlinedInput-notchedOutline": { borderColor: "white" }, // borda
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "white" }, // borda focada
+            }}
             >
               {categories.length === 0 ? (
                 <MenuItem value="" disabled>Nenhuma categoria disponível</MenuItem>
               ) : (
                 categories.map((cat) => (
-                  <MenuItem key={cat.categoryid ?? cat.id} value={cat.categoryid ?? cat.id}>
-                    {cat.categorydescription ?? cat.description ?? "Categoria sem descrição"}
+                  <MenuItem key={cat.categoryid} value={cat.categoryid}>
+                    {cat.categorydescription} — R$ {cat.categoryvalue}
                   </MenuItem>
                 ))
               )}
@@ -139,15 +119,37 @@ function CreateService() {
           </FormControl>
 
           <LocalizationProvider dateAdapter={AdapterDateFns} locale={ptBR}>
-            <DatePicker label="Data" value={selectedDate} onChange={(date) => setSelectedDate(date)} format="dd/MM/yyyy" />
-            <TimePicker label="Horário" value={selectedTime} onChange={(time) => setSelectedTime(time)} />
+            <DatePicker label="Data" value={selectedDate} onChange={(date) => setSelectedDate(date)} format="dd/MM/yyyy" 
+            slotProps={{
+              textField: {
+                sx: {
+                  input: { color: "white" },           // texto branco
+                  label: { color: "white" },           // label branco
+                  svg: { color: "white" },             // ícone do calendário branco
+                  fieldset: { borderColor: "white" },  // borda branca
+                },
+              },
+            }}
+            />
+            <TimePicker label="Horário" value={selectedTime} onChange={(time) => setSelectedTime(time)} 
+            slotProps={{
+              textField: {
+                sx: {
+                  input: { color: "white" },           // texto branco
+                  label: { color: "white" },           // label branco
+                  svg: { color: "white" },             // ícone do calendário branco
+                  fieldset: { borderColor: "white" },  // borda branca
+                },
+              },
+            }}
+            />
           </LocalizationProvider>
 
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            style={{ marginTop: "20px" }}
+            style={{ marginTop: "20px", backgroundColor: "#ef6817", color: "white" }}
             disabled={!selectedClient || !selectedCategory}
           >
             Salvar Serviço
