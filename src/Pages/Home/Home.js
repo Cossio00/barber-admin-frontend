@@ -74,7 +74,13 @@ function Home() {
                             <th className="serviceDate">{horario}</th>
                             <th className="clientName">{element.clientname}</th>
                             <th className="serviceDescription">{element.servicecategory}</th>
-                            <th className="serviceValue">{element.categoryvalue}</th>
+                            <th className="serviceValue"> 
+                                {new Intl.NumberFormat("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                    minimumFractionDigits: 2,
+                                }).format(element.categoryvalue)}
+                            </th>
                             <th className="serviceStatus">OK</th>
                             <th className="serviceActions">
                                 <ion-icon className="editService" name="pencil-outline" onClick={() => handleEdit(element.serviceid)}></ion-icon>
@@ -122,7 +128,13 @@ function Home() {
                                 <tfoot>
                                     <tr>
                                         <th colSpan="3" style={{ textAlign: "right" }}>Total</th>
-                                        <th className="totalValue">{totalValue}</th>
+                                        <th className="totalValue">
+                                            {new Intl.NumberFormat("pt-BR", {
+                                                style: "currency",
+                                                currency: "BRL",
+                                                minimumFractionDigits: 2,
+                                            }).format(totalValue)}
+                                        </th>
                                     </tr>
                                 </tfoot>
                             )}

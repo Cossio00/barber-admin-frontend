@@ -42,11 +42,18 @@ form{
 #date-picker-id {
   width: 200px; 
 }
-.create-service-button{ 
-    margin: auto;
-    margin-top: 20px;
-    background-color: #ef6817;
-    color: white;
-    width: 300px;
+
+.create-service-button {
+  margin: auto;
+  margin-top: 20px !important;
+  width: 300px;
+  background-color: #ef6817 !important;
+  color: white !important;
 }
+
+.create-service-button.Mui-disabled {
+  background-color: gray !important; /* desabilitado */
+  color: #ccc !important; /* texto desabilitado */
+}
+
 
