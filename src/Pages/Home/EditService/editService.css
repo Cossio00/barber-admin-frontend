@@ -16,7 +16,7 @@ form{
 }
 
 form div{
-    width: fit-content;
-    max-width: 200px;
+    /*width: fit-content;
+    max-width: 200px;*/
     margin-top: 6px;
 }

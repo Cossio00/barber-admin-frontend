@@ -67,7 +67,7 @@ function CreateService() {
         <h1>Criar Novo Serviço</h1>
 
         <form onSubmit={handleSubmit}>
-          <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="normal" className="slc-client">
             <InputLabel id="client-label" sx={{ color: "white" }} shrink>
               Cliente
             </InputLabel>
@@ -88,7 +88,7 @@ function CreateService() {
             </Select>
           </FormControl>
 
-          <FormControl fullWidth margin="normal">
+          <FormControl fullWidth margin="normal" className="slc-category">
             <InputLabel id="category-label" sx={{ color: "white" }} shrink>Categoria</InputLabel>
             <Select className="select-category"
               value={selectedCategory}
@@ -117,7 +117,7 @@ function CreateService() {
               }}
             />
             <TimePicker label="Horário" value={selectedTime} onChange={(time) => setSelectedTime(time)} 
-              className= "custom-date-picker"
+              className= "time-date-picker"
               slotProps={{
                 textField: {
                   id: "date-picker-id"

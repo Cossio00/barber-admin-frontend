@@ -4,7 +4,7 @@
 }
 
 .create-service-form-grid {
-  width: 60vw;
+  width: 50vw;
 }
 
 form{
@@ -13,8 +13,12 @@ form{
     padding: 20px;
 }
 
-.select-client{
-    width: 200px;
+.slc-client, .slc-category{
+    justify-self: center;
+}
+
+.select-client, .select-category{
+    width: 500px;
 }
 
 .select-client svg,
@@ -25,10 +29,6 @@ form{
     color: white;
     border-color: white;
 }             
-
-.select-category{
-    width: 200px;
-}
 
 .select-category svg,
 .select-category .MuiSelect-select,
@@ -42,6 +42,13 @@ form{
 #date-picker-id {
   width: 200px; 
 }
+
+
+/*
+.slc-category{
+
+}
+*/
 
 .create-service-button {
   margin: auto;

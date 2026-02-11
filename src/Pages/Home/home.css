@@ -38,14 +38,18 @@ h1, tr, th{
     color: #ffffff;
 }
 
-.custom-date-picker {
+.custom-date-picker, .time-date-picker {
   width: 150px; 
 }
 
 .custom-date-picker .MuiInputBase-input,
 .custom-date-picker label,
 .custom-date-picker svg,
-.custom-date-picker fieldset {
+.custom-date-picker fieldset,
+.time-date-picker .MuiInputBase-input,
+.time-date-picker label,
+.time-date-picker svg,
+.time-date-picker fieldset {
   color: white;
   border-color: white;
 }
