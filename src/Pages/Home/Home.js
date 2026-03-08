@@ -6,7 +6,7 @@ import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import api from "../../Services/api";
 import "./home.css";
-import { Dialog, DialogContent, DialogContentText, Button, DialogActions } from "@mui/material";
+import { Dialog, DialogContent, DialogContentText, Button, DialogActions, MenuItem, Select, InputLabel, FormControl} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 
@@ -45,6 +45,24 @@ function Home() {
             });
     }
 
+    const handleStatusChange = async (serviceId, newStatus) => {
+        try {
+            await api.put(`/service-status/${serviceId}`, { servicestatus: newStatus });
+
+            // Atualiza o estado localmente (otimista)
+            setService(prev =>
+                prev.map(item =>
+                    item.serviceid === serviceId
+                        ? { ...item, servicestatus: newStatus }
+                        : item
+                )
+            );
+
+        } catch (err) {
+            console.error("Erro ao atualizar status:", err);
+            alert("Não foi possível atualizar o status.");
+        }
+}
     const title = isToday(agendaDate) ? "Agenda de Hoje" : `Agenda de ${formatDate(agendaDate)}`;    
     
     useEffect(() => {
@@ -60,35 +78,47 @@ function Home() {
             });
     }, [agendaDate]);
 
-    const totalValue = service.reduce(
-        (acc, item) => acc + Number(item.categoryvalue || 0),
-        0
-    );
+    const totalValue = service
+        .filter(item => item.servicestatus === 'concluido')
+        .reduce((acc, item) => acc + Number(item.categoryvalue || 0), 0);
 
     const listElements = service.map((element) => {
         const horario = new Date(element.servicedate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    
-            return(
-                    <tbody>
-                        <tr>
-                            <th className="serviceDate">{horario}</th>
-                            <th className="clientName">{element.clientname}</th>
-                            <th className="serviceDescription">{element.servicecategory}</th>
-                            <th className="serviceValue"> 
-                                {new Intl.NumberFormat("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                    minimumFractionDigits: 2,
-                                }).format(element.categoryvalue)}
-                            </th>
-                            <th className="serviceStatus">OK</th>
-                            <th className="serviceActions">
-                                <ion-icon className="editService" name="pencil-outline" onClick={() => handleEdit(element.serviceid)}></ion-icon>
-                                <ion-icon className="deleteService" name="close-outline" onClick={() => handleClickOpen(element.serviceid)}></ion-icon>
-                            </th>
-                        </tr>  
-                    </tbody>          
-            )})
+
+        return(
+                <tbody>
+                    <tr>
+                        <th className="serviceDate">{horario}</th>
+                        <th className="clientName">{element.clientname}</th>
+                        <th className="serviceDescription">{element.servicecategory}</th>
+                        <th className="serviceValue"> 
+                            {new Intl.NumberFormat("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                                minimumFractionDigits: 2,
+                            }).format(element.categoryvalue)}
+                        </th>
+                        <th className="serviceStatus">
+                <FormControl size="small">
+                    <Select
+                        value={element.servicestatus || 'agendado'}
+                        onChange={(e) => handleStatusChange(element.serviceid, e.target.value)}
+                        displayEmpty
+                        sx={{ minWidth: 100, fontSize: '0.9rem' }}
+                    >
+                        <MenuItem value="agendado">Agendado</MenuItem>
+                        <MenuItem value="concluido">Concluído</MenuItem>
+                        <MenuItem value="cancelado">Cancelado</MenuItem>
+                    </Select>
+                </FormControl>
+            </th>
+                        <th className="serviceActions">
+                            <ion-icon className="editService" name="pencil-outline" onClick={() => handleEdit(element.serviceid)}></ion-icon>
+                            <ion-icon className="deleteService" name="close-outline" onClick={() => handleClickOpen(element.serviceid)}></ion-icon>
+                        </th>
+                    </tr>  
+                </tbody>          
+        )})
 
     return(
         <div className= "home">
