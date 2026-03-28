@@ -11,8 +11,9 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const App = () => {
+  return <Index/>}
+  {/*<QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Sonner />                   
       <BrowserRouter>
@@ -25,7 +26,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
-  </QueryClientProvider>
-);
+  </QueryClientProvider>*/}
+//);
 
 export default App;
