@@ -11,14 +11,13 @@ import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
-const App = () => {
-  return <Index/>}
-  {/*<QueryClientProvider client={queryClient}>
+const App = () => (
+  <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Sonner />                   
+      {/*<Sonner />*/}
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />         
+          <Route path="/" element={<Index />} />
           <Route path="/closures" element={<Closures />} />
           <Route path="/closure-overview/:id" element={<ClosureOverview />} />
           <Route path="/closure-details/:id" element={<ClosureDetails />} />
@@ -26,7 +25,7 @@ const App = () => {
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
-  </QueryClientProvider>*/}
-//);
+  </QueryClientProvider>
+);
 
 export default App;
