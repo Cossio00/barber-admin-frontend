@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Plus, Scissors } from "lucide-react";
@@ -8,15 +8,9 @@ import { AgendaTable } from "@/components/agenda/AgendaTable";
 import { DailyStats } from "@/components/agenda/DailyStats";
 import { DateSelector } from "@/components/agenda/DateSelector";
 import { DeleteServiceDialog } from "@/components/agenda/DeleteServiceDialog";
+import api from "@/services/api";
 
-// Mock data for demonstration
-const MOCK_SERVICES = [
-  { serviceid: "1", servicedate: new Date().toISOString(), clientname: "João Silva", servicecategory: "Corte Degradê", categoryvalue: 45, servicestatus: "concluido" },
-  { serviceid: "2", servicedate: new Date().toISOString(), clientname: "Pedro Santos", servicecategory: "Barba", categoryvalue: 30, servicestatus: "agendado" },
-  { serviceid: "3", servicedate: new Date().toISOString(), clientname: "Lucas Oliveira", servicecategory: "Corte + Barba", categoryvalue: 65, servicestatus: "agendado" },
-  { serviceid: "4", servicedate: new Date().toISOString(), clientname: "Marcos Costa", servicecategory: "Corte Social", categoryvalue: 40, servicestatus: "cancelado" },
-  { serviceid: "5", servicedate: new Date().toISOString(), clientname: "Rafael Lima", servicecategory: "Corte Degradê", categoryvalue: 45, servicestatus: "concluido" },
-];
+
 
 export type ServiceItem = {
   serviceid: string;
@@ -28,7 +22,7 @@ export type ServiceItem = {
 };
 
 const Index = () => {
-  const [services, setServices] = useState<ServiceItem[]>(MOCK_SERVICES);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [agendaDate, setAgendaDate] = useState<Date>(new Date());
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState<string>("");
@@ -38,19 +32,38 @@ const Index = () => {
     ? "Agenda de Hoje"
     : `Agenda de ${format(agendaDate, "dd/MM", { locale: ptBR })}`;
 
-  const handleStatusChange = (serviceId: string, newStatus: string) => {
+  const handleStatusChange = async (serviceId: string, newStatus: string) => {
+  try {
+    await api.put(`/service-status/${serviceId}`, {
+      servicestatus: newStatus,
+    });
+
     setServices((prev) =>
       prev.map((item) =>
-        item.serviceid === serviceId ? { ...item, servicestatus: newStatus } : item
+        item.serviceid === serviceId
+          ? { ...item, servicestatus: newStatus }
+          : item
       )
     );
-  };
+  } catch (err) {
+    console.error("Erro ao atualizar status:", err);
+  }
+};
 
-  const handleDelete = () => {
-    setServices((prev) => prev.filter((item) => item.serviceid !== selectedServiceId));
+  const handleDelete = async () => {
+  try {
+    await api.delete(`/service/${selectedServiceId}`);
+
+    setServices((prev) =>
+      prev.filter((item) => item.serviceid !== selectedServiceId)
+    );
+
     setDeleteDialogOpen(false);
     setSelectedServiceId("");
-  };
+  } catch (err) {
+    console.error("Erro ao deletar:", err);
+  }
+};
 
   const handleOpenDelete = (id: string) => {
     setSelectedServiceId(id);
@@ -63,6 +76,20 @@ const Index = () => {
 
   const totalAgendado = services.filter((s) => s.servicestatus === "agendado").length;
   const totalConcluidos = services.filter((s) => s.servicestatus === "concluido").length;
+  
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await api.post("/service-agenda", {
+        date: `${agendaDate.getFullYear()}-${agendaDate.getMonth() + 1}-${agendaDate.getDate()}`
+      });
+      setServices(response.data.services);
+    } catch (err) {
+      console.error("Erro ao buscar serviços:", err);
+    }
+  };
+  fetchServices();}, [agendaDate]);
+
 
   return (
     <div className="min-h-screen bg-background">
