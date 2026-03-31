@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Scissors } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon, Clock, ArrowLeft, Scissors } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/services/api";
 
@@ -19,19 +22,21 @@ const CreateService = () => {
 
   const [clientId, setClientId] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    api.get("/client")
-      .then((res) => setClients(res.data.list ?? res.data.clients ?? []))
-      .catch((err) => console.error("Erro ao carregar clientes:", err));
-
-    api.get("/category")
-      .then((res) => setCategories(res.data.list ?? res.data.categories ?? []))
-      .catch((err) => console.error("Erro ao carregar categorias:", err));
-  }, []);
+    Promise.all([
+        api.get("/client"),
+        api.get("/category")
+    ])
+    .then(([clientsRes, categoriesRes]) => {
+        setClients(clientsRes.data.list ?? clientsRes.data.clients ?? [])
+        setCategories(categoriesRes.data.list ?? categoriesRes.data.categories ?? [])
+    })
+    .catch(err => console.error(err))
+    }, [])
 
   const selectedCategory = categories.find((c) => String(c.categoryid) === categoryId);
 
@@ -46,7 +51,11 @@ const CreateService = () => {
     setLoading(true);
 
     try {
-      const [year, month, day] = date.split("-");
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+
       const [hour, minute] = time.split(":");
 
       const formattedDate = `${year}-${month}-${day} ${hour}:${minute}:00`;
@@ -133,26 +142,61 @@ const CreateService = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
+
+                {/* DATA */}
                 <div className="space-y-2">
-                  <Label htmlFor="date">Data</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={date}
-                    lang="pt-BR"
-                    onChange={(e) => setDate(e.target.value)}
-                  />
+                    <Label>Data</Label>
+
+                    <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                        >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : "Selecione"}
+                        </Button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="w-auto p-0">
+                        <Calendar
+                        mode="single"
+                        selected={date}
+                        onSelect={setDate}
+                        locale={ptBR}
+                        />
+                    </PopoverContent>
+                    </Popover>
                 </div>
+
+                {/* HORÁRIO */}
                 <div className="space-y-2">
-                  <Label htmlFor="time">Horário</Label>
-                  <Input
-                    id="time"
-                    type="time"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                  />
+                    <Label>Horário</Label>
+
+                    <div className="flex items-center gap-2 border rounded-md px-3 h-10">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+
+                    <input
+                        type="text"
+                        placeholder="12:00"
+                        value={time}
+                        maxLength={5}
+                        onChange={(e) => {
+                            let v = e.target.value.replace(/\D/g, ""); // remove tudo que não é número
+
+                            if (v.length >= 3) {
+                            v = v.slice(0, 2) + ":" + v.slice(2, 4);
+                            }
+
+                            if (v.length > 5) v = v.slice(0, 5);
+
+                            setTime(v);
+                        }}className="bg-transparent outline-none w-full"
+                    />
+                    </div>
                 </div>
-              </div>
+
+</div>
 
               <div className="flex gap-3 pt-4">
                 <Button type="submit" variant="action" size="lg" className="flex-1" disabled={loading}>
