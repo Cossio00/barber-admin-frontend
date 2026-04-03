@@ -8,12 +8,10 @@ import ClosureOverview from "./pages/ClosureOverview.tsx";
 import ClosureDetails from "./pages/ClosureDetails.tsx";
 import CreateService from "./pages/CreateService.tsx";
 import EditService from "./pages/EditService.tsx";
-import CreateCategory from "./pages/CreateCategory.tsx";
-import EditCategory from "./pages/EditCategory.tsx";
-import CreateClient from "./pages/CreateClient.tsx";
-import EditClient from "./pages/EditClient.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { AppHeader } from "./components/AppHeader";
+import Categories from "./pages/Categories.tsx";
+import Clients from "./pages/Clients.tsx";
 
 
 const queryClient = new QueryClient();
@@ -30,10 +28,8 @@ const App = () => (
           <Route path="/closure-details/:id" element={<ClosureDetails />} />
           <Route path="/create-service" element={<CreateService />} />
           <Route path="/edit-service/:id" element={<EditService />} />
-          <Route path="/create-category" element={<CreateCategory />} />
-          <Route path="/edit-category/:id" element={<EditCategory />} />
-          <Route path="/create-client" element={<CreateClient />} />
-          <Route path="/edit-client/:id" element={<EditClient />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/clients" element={<Clients />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

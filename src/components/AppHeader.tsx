@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Agenda", path: "/", icon: CalendarDays },
   { label: "Fechamentos", path: "/closures", icon: Archive },
-  { label: "Clientes", path: "/create-client", icon: Users },
-  { label: "Categorias", path: "/create-category", icon: Tag },
+  { label: "Clientes", path: "/clients", icon: Users },
+  { label: "Categorias", path: "/categories", icon: Tag },
 ];
 
 export function AppHeader() {
