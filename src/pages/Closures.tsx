@@ -27,16 +27,33 @@ const Closures = () => {
   const [loading,setLoading] = useState(true);
 
   const loadClosures = async () => {
-    try{
-      const res = await api.get("/closure");
-      setClosures(res.data.closures?.closures || []);
-    }catch(err){
-      console.error(err);
-      toast.error("Erro ao carregar fechamentos");
-    }finally{
-      setLoading(false);
+  try {
+    const res = await api.get("/closure");
+    console.log(res.data);
+    const responseData = res.data;
+
+    let closuresList: Closure[] = [];
+
+    if (responseData.closures?.list) {
+      closuresList = responseData.closures.list;           
+    } else if (Array.isArray(responseData.closures)) {
+      closuresList = responseData.closures;                
+    } else if (Array.isArray(responseData.list)) {
+      closuresList = responseData.list;
     }
-  };
+
+    setClosures(closuresList);
+
+  } catch (err: any) {
+    console.error("Erro ao carregar fechamentos:", err);
+    toast.error(
+      err?.response?.data?.message || 
+      "Erro ao carregar fechamentos"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(()=>{
     loadClosures();
@@ -58,14 +75,12 @@ const Closures = () => {
       toast.success("Mês fechado com sucesso");
       loadClosures();
 
-    }catch(err:any){
-
+    }catch (err: any) {
       console.error(err);
-
-      toast.error(
-        err?.response?.data?.message ||
-        "Erro ao fechar mês"
-      );
+      const errorMessage = err?.response?.data?.message || 
+                      err?.response?.data?.error || 
+                      "Erro ao fechar mês";
+      toast.error(errorMessage);
     }
   };
 
@@ -102,7 +117,7 @@ const Closures = () => {
             onClick={handleCloseMonth}
           >
             <Lock className="w-4 h-4" />
-            Fechar Mês
+            Fechar Último Mês
           </Button>
 
         </div>
