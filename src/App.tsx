@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound.tsx";
 import Categories from "./pages/Categories.tsx";
 import Clients from "./pages/Clients.tsx";
 import { AppHeader } from "./components/AppHeader";
+import { Toaster } from "sonner";
 
 const queryClient = new QueryClient();
 
@@ -75,6 +76,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        <Toaster position="top-right" richColors closeButton={false} />
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
