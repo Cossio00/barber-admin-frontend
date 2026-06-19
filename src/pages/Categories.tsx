@@ -7,8 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { DeleteServiceDialog } from "@/components/agenda/DeleteServiceDialog";
 import api from "@/services/api";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface Category {
   categoryid: number;
@@ -17,11 +17,12 @@ interface Category {
 }
 
 const Categories = () => {
-
   const [categories, setCategories] = useState<Category[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState({ description: "", value: "" });
+
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newDesc, setNewDesc] = useState("");
@@ -66,13 +67,14 @@ const Categories = () => {
         categoryvalue: Number(editData.value),
       });
 
+      toast.success("Categoria atualizada com sucesso!", {
+        description: "As informações foram salvas.",
+      });
+
       setEditingId(null);
       await loadCategories();
-
-      toast.success("Categoria atualizada!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao atualizar categoria");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Erro ao atualizar categoria");
     }
   };
 
@@ -81,13 +83,18 @@ const Categories = () => {
 
     try {
       await api.delete(`/category/${deleteId}`);
+
+      toast.success("Categoria removida com sucesso!", {
+        description: "A categoria foi excluída permanentemente.",
+      });
+
       setDeleteId(null);
       await loadCategories();
-
-      toast.success("Categoria removida!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao remover categoria");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Erro ao remover categoria");
+    } finally {
+      setDeleteId(null);
+      setShowConfirmDelete(false);
     }
   };
 
@@ -103,78 +110,54 @@ const Categories = () => {
         categoryvalue: Number(newValue),
       });
 
+      toast.success("Categoria criada com sucesso!", {
+        description: "A nova categoria foi cadastrada.",
+      });
+
       setNewDesc("");
       setNewValue("");
       setDialogOpen(false);
-
       await loadCategories();
-
-      toast.success("Categoria criada com sucesso!");
-    } catch (err) {
-      console.error(err);
-      toast.error("Erro ao criar categoria");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Erro ao criar categoria");
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="page-container animate-fade-in max-w-4xl">
-
         <Card className="barber-card">
-
           <CardHeader>
-
             <div className="flex items-center justify-between">
-
               <div className="flex items-center gap-3">
-
                 <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                   <Tag className="w-5 h-5 text-primary" />
                 </div>
-
-                <CardTitle className="text-xl">
-                  Categorias
-                </CardTitle>
-
+                <CardTitle className="text-xl">Categorias</CardTitle>
               </div>
 
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-
                 <DialogTrigger asChild>
-
                   <Button variant="action" size="sm" className="gap-2">
                     <Plus className="w-4 h-4" />
                     Nova Categoria
                   </Button>
-
                 </DialogTrigger>
-
                 <DialogContent className="bg-card border-border-subtle">
-
                   <DialogHeader>
-                    <DialogTitle className="text-foreground">
-                      Nova Categoria
-                    </DialogTitle>
+                    <DialogTitle className="text-foreground">Nova Categoria</DialogTitle>
                   </DialogHeader>
-
                   <div className="space-y-4 pt-2">
-
                     <div className="space-y-2">
-
                       <Label>Descrição</Label>
-
                       <Input
                         placeholder="Ex: Corte Degradê"
                         value={newDesc}
                         onChange={(e) => setNewDesc(e.target.value)}
                       />
-
                     </div>
-
                     <div className="space-y-2">
-
                       <Label>Valor (R$)</Label>
-
                       <Input
                         type="number"
                         step="0.01"
@@ -183,73 +166,40 @@ const Categories = () => {
                         value={newValue}
                         onChange={(e) => setNewValue(e.target.value)}
                       />
-
                     </div>
-
                     <div className="flex gap-3 pt-2">
-
-                      <Button
-                        variant="action"
-                        className="flex-1"
-                        onClick={handleCreate}
-                      >
+                      <Button variant="action" className="flex-1" onClick={handleCreate}>
                         Criar Categoria
                       </Button>
-
-                      <Button
-                        variant="outline"
-                        onClick={() => setDialogOpen(false)}
-                      >
+                      <Button variant="outline" onClick={() => setDialogOpen(false)}>
                         Cancelar
                       </Button>
-
                     </div>
-
                   </div>
-
                 </DialogContent>
-
               </Dialog>
-
             </div>
-
           </CardHeader>
 
           <CardContent>
-
             {categories.length === 0 ? (
-
               <p className="text-muted-foreground text-center py-8">
                 Nenhuma categoria cadastrada.
               </p>
-
             ) : (
-
               <Table>
-
                 <TableHeader>
-
                   <TableRow className="border-border-subtle">
                     <TableHead>Descrição</TableHead>
                     <TableHead className="w-32">Valor</TableHead>
                     <TableHead className="w-24 text-right">Ações</TableHead>
                   </TableRow>
-
                 </TableHeader>
-
                 <TableBody>
-
                   {categories.map((cat) => (
-
-                    <TableRow
-                      key={cat.categoryid}
-                      className="border-border-subtle"
-                    >
-
+                    <TableRow key={cat.categoryid} className="border-border-subtle">
                       <TableCell>
-
                         {editingId === cat.categoryid ? (
-
                           <Input
                             value={editData.description}
                             onChange={(e) =>
@@ -260,21 +210,13 @@ const Categories = () => {
                             }
                             className="h-8"
                           />
-
                         ) : (
-
-                          <span className="text-foreground">
-                            {cat.categorydescription}
-                          </span>
-
+                          <span className="text-foreground">{cat.categorydescription}</span>
                         )}
-
                       </TableCell>
 
                       <TableCell>
-
                         {editingId === cat.categoryid ? (
-
                           <Input
                             type="number"
                             step="0.01"
@@ -287,23 +229,16 @@ const Categories = () => {
                             }
                             className="h-8 w-24"
                           />
-
                         ) : (
-
                           <span className="text-foreground font-medium">
                             R$ {Number(cat.categoryvalue).toFixed(2)}
                           </span>
-
                         )}
-
                       </TableCell>
 
                       <TableCell className="text-right">
-
                         {editingId === cat.categoryid ? (
-
                           <div className="flex justify-end gap-1">
-
                             <Button
                               size="icon"
                               variant="ghost"
@@ -312,7 +247,6 @@ const Categories = () => {
                             >
                               <Check className="w-4 h-4" />
                             </Button>
-
                             <Button
                               size="icon"
                               variant="ghost"
@@ -321,13 +255,9 @@ const Categories = () => {
                             >
                               <X className="w-4 h-4" />
                             </Button>
-
                           </div>
-
                         ) : (
-
                           <div className="flex justify-end gap-1">
-
                             <Button
                               size="icon"
                               variant="ghost"
@@ -336,7 +266,6 @@ const Categories = () => {
                             >
                               <Pencil className="w-4 h-4" />
                             </Button>
-
                             <Button
                               size="icon"
                               variant="ghost"
@@ -345,35 +274,28 @@ const Categories = () => {
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
-
                           </div>
-
                         )}
-
                       </TableCell>
-
                     </TableRow>
-
                   ))}
-
                 </TableBody>
-
               </Table>
-
             )}
-
           </CardContent>
-
         </Card>
-
       </div>
 
-      <DeleteServiceDialog
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
         open={deleteId !== null}
-        onClose={() => setDeleteId(null)}
+        onOpenChange={setShowConfirmDelete}
+        title="Excluir Categoria"
+        description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        variant="destructive"
         onConfirm={handleDelete}
       />
-
     </div>
   );
 };
