@@ -286,7 +286,6 @@ const Categories = () => {
         </Card>
       </div>
 
-      {/* Confirm Delete Dialog */}
       <ConfirmDialog
         open={deleteId !== null}
         onOpenChange={setShowConfirmDelete}

@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 interface Closure {
   closureid: string;
@@ -44,6 +45,10 @@ const Closures = () => {
   const [selectedMonth, setSelectedMonth] = useState<number>(1);
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
+  // Estados para confirmação
+  const [showConfirmClose, setShowConfirmClose] = useState(false);
+  const [monthToClose, setMonthToClose] = useState<string>("");
+
   const loadClosures = async () => {
     try {
       const res = await api.get("/closure");
@@ -67,30 +72,44 @@ const Closures = () => {
     loadClosures();
   }, []);
 
-  const handleCloseLastMonth = async () => {
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-    const monthYear = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, "0")}`;
-    await closeMonth(monthYear);
+  const confirmCloseMonth = (monthYear: string) => {
+    setMonthToClose(monthYear);
+    setShowConfirmClose(true);
   };
 
-  const handleCloseSpecificMonth = async () => {
-    const monthYear = `${selectedYear}-${String(selectedMonth).padStart(2, "0")}`;
-    await closeMonth(monthYear);
-    setIsCloseDialogOpen(false);
-  };
+  const handleCloseConfirmed = async () => {
+    if (!monthToClose) return;
 
-  const closeMonth = async (monthYear: string) => {
     try {
-      await api.post("/closure", { closuremonthyear: monthYear });
-      toast.success(`Mês ${monthYear} fechado com sucesso!`);
+      await api.post("/closure", { closuremonthyear: monthToClose });
+      
+      toast.success(`Mês ${monthToClose} fechado com sucesso!`, {
+        description: "O fechamento foi realizado e os dados foram atualizados.",
+      });
+      
       loadClosures();
     } catch (err: any) {
       const errorMessage = err?.response?.data?.message ||
                           err?.response?.data?.error ||
                           "Erro ao fechar mês";
       toast.error(errorMessage);
+    } finally {
+      setShowConfirmClose(false);
+      setMonthToClose("");
     }
+  };
+
+  const handleCloseLastMonth = () => {
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    const monthYear = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, "0")}`;
+    confirmCloseMonth(monthYear);
+  };
+
+  const handleCloseSpecificMonth = () => {
+    const monthYear = `${selectedYear}-${String(selectedMonth).padStart(2, "0")}`;
+    confirmCloseMonth(monthYear);
+    setIsCloseDialogOpen(false);
   };
 
   if (loading) return <div className="p-10">Carregando...</div>;
@@ -127,10 +146,8 @@ const Closures = () => {
                 <DialogHeader>
                   <DialogTitle>Fechar Mês Específico</DialogTitle>
                 </DialogHeader>
-
                 <div className="space-y-6 py-4">
                   <div className="grid grid-cols-2 gap-4">
-                    {/* Seleção de Mês */}
                     <div>
                       <Label>Mês</Label>
                       <Select value={String(selectedMonth)} onValueChange={(v) => setSelectedMonth(Number(v))}>
@@ -147,7 +164,6 @@ const Closures = () => {
                       </Select>
                     </div>
 
-                    {/* Seleção de Ano */}
                     <div>
                       <Label>Ano</Label>
                       <Select value={String(selectedYear)} onValueChange={(v) => setSelectedYear(Number(v))}>
@@ -170,7 +186,7 @@ const Closures = () => {
 
                   <div className="flex gap-3 pt-4">
                     <Button variant="action" onClick={handleCloseSpecificMonth} className="flex-1">
-                      Fechar Mês Selecionado
+                      Confirmar Seleção
                     </Button>
                     <Button variant="outline" onClick={() => setIsCloseDialogOpen(false)}>
                       Cancelar
@@ -222,6 +238,16 @@ const Closures = () => {
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={showConfirmClose}
+        onOpenChange={setShowConfirmClose}
+        title="Fechar Mês"
+        description={`Tem certeza que deseja fechar o mês ${monthToClose}? Esta ação não pode ser desfeita.`}
+        confirmText="Fechar Mês"
+        variant="default"
+        onConfirm={handleCloseConfirmed}
+      />
     </div>
   );
 };
