@@ -13,114 +13,107 @@ import { toast } from "sonner";
 import api from "@/services/api";
 
 type Category = {
-  categoryid: number
-  categorydescription: string
-  categoryvalue: number
-}
+  categoryid: number;
+  categorydescription: string;
+  categoryvalue: number;
+};
 
 const EditService = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const { id } = useParams()
-  const navigate = useNavigate()
+  const [clientName, setClientName] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryId, setCategoryId] = useState("");
+  const [date, setDate] = useState<Date | undefined>();
+  const [time, setTime] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
 
-  const [clientName, setClientName] = useState("")
-  const [categories, setCategories] = useState<Category[]>([])
-
-  const [categoryId, setCategoryId] = useState("")
-  const [date, setDate] = useState<Date | undefined>()
-  const [time, setTime] = useState("")
-
-  const [loading, setLoading] = useState(false)
-  const [fetching, setFetching] = useState(true)
-
-  const selectedCategory = categories.find(c => String(c.categoryid) === categoryId)
+  const selectedCategory = categories.find(c => String(c.categoryid) === categoryId);
 
   const formatTime = (d: Date) => {
-    const h = String(d.getHours()).padStart(2, "0")
-    const m = String(d.getMinutes()).padStart(2, "0")
-    return `${h}:${m}`
-  }
+    const h = String(d.getHours()).padStart(2, "0");
+    const m = String(d.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+  };
 
   const loadService = async () => {
     try {
-        const res = await api.get(`/service-agenda/${id}`)
-        const data = res.data
+      const res = await api.get(`/service-agenda/${id}`);
+      const data = res.data;
+      const parsedDate = new Date(data.servicedate);
 
-        const parsedDate = new Date(data.servicedate)
-
-        setClientName(data.clientname)
-        setCategoryId(String(data.servicecategory))
-        setDate(new Date(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()))
-        setTime(formatTime(parsedDate))
-
+      setClientName(data.clientname);
+      setCategoryId(String(data.servicecategory));
+      setDate(new Date(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate()));
+      setTime(formatTime(parsedDate));
     } catch (err) {
-        console.error(err)
-        toast.error("Erro ao carregar serviço")
+      console.error(err);
+      toast.error("Erro ao carregar serviço");
     }
-  }
+  };
 
   const loadCategories = async () => {
     try {
-      const res = await api.get("/category")
-      setCategories(res.data.list ?? res.data.categories ?? [])
+      const res = await api.get("/category");
+      setCategories(res.data.list ?? res.data.categories ?? []);
     } catch (err) {
-      console.error("Erro ao carregar categorias", err)
+      console.error("Erro ao carregar categorias", err);
     }
-  }
+  };
 
   useEffect(() => {
     const init = async () => {
-      await loadCategories()
-      await loadService()
-      setFetching(false)
-      setFetching(false)
-    }
-
-    init()
-  }, [id])
+      await loadCategories();
+      await loadService();
+      setFetching(false);
+    };
+    init();
+  }, [id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!categoryId || !date || !time) {
-      toast.error("Preencha todos os campos")
-      return
+      toast.error("Preencha todos os campos");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const [hour, minute] = time.split(":");
 
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, "0")
-      const day = String(date.getDate()).padStart(2, "0")
-
-      const [hour, minute] = time.split(":")
-
-      const formattedDate = `${year}-${month}-${day} ${hour}:${minute}:00`
+      const formattedDate = `${year}-${month}-${day} ${hour}:${minute}:00`;
 
       await api.put(`/service/${id}`, {
         servicedate: formattedDate,
         servicecategoryid: Number(categoryId)
-      })
+      });
 
-      toast.success("Serviço atualizado com sucesso!")
-      navigate("/")
+      toast.success("Serviço atualizado com sucesso!", {
+        description: "As alterações foram salvas.",
+      });
 
-    } catch (err) {
-      console.error(err)
-      toast.error("Erro ao atualizar serviço")
+      navigate("/");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || "Erro ao atualizar serviço");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (fetching) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-muted-foreground">Carregando...</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -248,24 +241,12 @@ const EditService = () => {
 
               <div className="flex gap-3 pt-4">
 
-                <Button
-                  type="submit"
-                  variant="action"
-                  size="lg"
-                  className="flex-1"
-                  disabled={loading}
-                >
-                  {loading ? "Salvando..." : "Salvar Alterações"}
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
-                  onClick={() => navigate(-1)}
-                >
-                  Cancelar
-                </Button>
+                <Button type="submit" variant="action" size="lg" className="flex-1" disabled={loading}>
+            {loading ? "Salvando..." : "Salvar Alterações"}
+          </Button>
+          <Button type="button" variant="outline" size="lg" onClick={() => navigate(-1)}>
+            Cancelar
+          </Button>
 
               </div>
 

@@ -16,31 +16,44 @@ const Login = () => {
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const res = await api.post("/login", { email, password });
-      
-      if (res.data.success) {
-        const { token, user } = res.data.data;
+  try {
+    const res = await api.post("/login", { email, password });
+    
+    console.log("Resposta completa do login:", res.data);
+
+    if (res.data.success) {
+      const responseData = res.data.data || res.data; 
+
+      const token = responseData.token;
+      const user = responseData.user;
+
+      if (token && user) {
         login(token, user);
         toast.success("Login realizado com sucesso!");
-        navigate("/");
+        navigate("/");   
+      } else {
+        toast.error("Resposta inválida do servidor");
       }
-    } catch (err: any) {
-      const message = err?.response?.data?.message || "Email ou senha inválidos";
-      toast.error(message);
-    } finally {
-      setLoading(false);
+    } else {
+      toast.error(res.data.message || "Erro ao fazer login");
     }
-  };
+  } catch (err: any) {
+    console.error("Erro completo:", err);
+    const message = err?.response?.data?.message || "Email ou senha inválidos";
+    toast.error(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Barbearia Admin</CardTitle>
+          <CardTitle className="text-2xl">Barber Admin</CardTitle>
           <p className="text-muted-foreground">Entre na sua conta</p>
         </CardHeader>
         <CardContent>

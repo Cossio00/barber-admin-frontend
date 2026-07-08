@@ -14,6 +14,7 @@ import EditService from "./pages/EditService.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Categories from "./pages/Categories.tsx";
 import Clients from "./pages/Clients.tsx";
+import Register from "./pages/Register.tsx";
 import { AppHeader } from "./components/AppHeader";
 import { Toaster } from "sonner";
 
@@ -32,6 +33,8 @@ const App = () => (
           <AppHeader />
             <Routes>
             <Route path="/login" element={<Login />} />
+          
+            <Route path="/register" element={<Register />} />
           
             <Route path="/" element={
               <PrivateRoute>

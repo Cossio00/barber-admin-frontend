@@ -6,6 +6,8 @@ interface User {
   username: string;
   email: string;
   role: string;
+  barbershopid?: string;      
+  barbershopname?: string;    
 }
 
 interface AuthContextType {
@@ -48,12 +50,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      token, 
-      login, 
-      logout, 
-      isAuthenticated: !!token 
+    <AuthContext.Provider value={{
+      user,
+      token,
+      login,
+      logout,
+      isAuthenticated: !!token
     }}>
       {children}
     </AuthContext.Provider>
