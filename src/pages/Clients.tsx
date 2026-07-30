@@ -29,8 +29,7 @@ const Clients = () => {const [clients, setClients] = useState<Client[]>([]);
   const [editData, setEditData] = useState({ name: "", phone: "" });
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-
+  
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState({ title: "", description: "" });
 
@@ -130,16 +129,15 @@ const handleDelete = async () => {
     toast.error(err?.response?.data?.message || "Erro ao remover cliente");
   } finally {
     setDeleteId(null);
-    setShowConfirmDelete(false);
   }
 };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="page-container animate-fade-in max-w-4xl">
-        <Card className="barber-card">
+        <Card className="barber-card overflow-hidden">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                   <Users className="w-5 h-5 text-primary" />
@@ -149,12 +147,12 @@ const handleDelete = async () => {
 
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="action" size="sm" className="gap-2">
+                  <Button variant="action" className="w-full sm:w-auto gap-2">
                     <Plus className="w-4 h-4" />
                     Novo Cliente
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-card border-border-subtle">
+                <DialogContent className="bg-card border-border-subtle w-[95vw] max-w-md rounded-xl">
                   <DialogHeader>
                     <DialogTitle className="text-foreground">Novo Cliente</DialogTitle>
                   </DialogHeader>
@@ -175,11 +173,11 @@ const handleDelete = async () => {
                         onChange={(e) => setNewPhone(formatPhone(e.target.value))}
                       />
                     </div>
-                    <div className="flex gap-3 pt-2">
-                      <Button variant="action" className="flex-1" onClick={handleCreate}>
+                    <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+                      <Button variant="action" className="w-full flex-1" onClick={handleCreate}>
                         Criar Cliente
                       </Button>
-                      <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                      <Button variant="outline" className="w-full sm:w-auto" onClick={() => setDialogOpen(false)}>
                         Cancelar
                       </Button>
                     </div>
@@ -195,74 +193,225 @@ const handleDelete = async () => {
                 Nenhum cliente cadastrado.
               </p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border-subtle">
-                    <TableHead>Nome</TableHead>
-                    <TableHead className="w-44">Telefone</TableHead>
-                    <TableHead className="w-24 text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {clients.map((client) => (
-                    <TableRow key={client.clientid} className="border-border-subtle">
-                      <TableCell>
-                        {editingId === client.clientid ? (
-                          <Input
-                            value={editData.name}
-                            onChange={(e) => setEditData(d => ({ ...d, name: e.target.value }))}
-                            className="h-8"
-                          />
-                        ) : (
-                          <span className="text-foreground">{client.clientname}</span>
-                        )}
-                      </TableCell>
+              <>
+              {/* Desktop */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-border-subtle">
+                      <TableHead>Nome</TableHead>
+                      <TableHead className="w-44">Telefone</TableHead>
+                      <TableHead className="w-24 text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
 
-                      <TableCell>
-                        {editingId === client.clientid ? (
-                          <Input
-                            value={editData.phone}
-                            onChange={(e) => setEditData(d => ({ ...d, phone: formatPhone(e.target.value) }))}
-                            className="h-8 w-40"
-                          />
-                        ) : (
-                          <span className="text-muted-foreground">{client.clientphone}</span>
-                        )}
-                      </TableCell>
+                  <TableBody>
+                    {clients.map((client) => (
+                      <TableRow
+                        key={client.clientid}
+                        className="border-border-subtle"
+                      >
+                        <TableCell>
+                          {editingId === client.clientid ? (
+                            <Input
+                              value={editData.name}
+                              onChange={(e) =>
+                                setEditData((d) => ({
+                                  ...d,
+                                  name: e.target.value,
+                                }))
+                              }
+                              className="h-8"
+                            />
+                          ) : (
+                            <span className="text-foreground">
+                              {client.clientname}
+                            </span>
+                          )}
+                        </TableCell>
 
-                      <TableCell className="text-right">
-                        {editingId === client.clientid ? (
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-green-400 hover:text-green-300" onClick={() => saveEdit(client.clientid)}>
-                              <Check className="w-4 h-4" />
+                        <TableCell>
+                          {editingId === client.clientid ? (
+                            <Input
+                              value={editData.phone}
+                              onChange={(e) =>
+                                setEditData((d) => ({
+                                  ...d,
+                                  phone: formatPhone(e.target.value),
+                                }))
+                              }
+                              className="h-8 w-40"
+                            />
+                          ) : (
+                            <span className="text-muted-foreground">
+                              {client.clientphone}
+                            </span>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="text-right">
+                          {editingId === client.clientid ? (
+                            <div className="flex justify-end gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-green-400 hover:text-green-300"
+                                onClick={() => saveEdit(client.clientid)}
+                              >
+                                <Check className="w-4 h-4" />
+                              </Button>
+
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground"
+                                onClick={cancelEdit}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex justify-end gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                onClick={() => startEdit(client)}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                onClick={() => {
+                                  setDeleteId(client.clientid);
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile */}
+              <div className="space-y-4 md:hidden">
+                {clients.map((client) => (
+                  <Card
+                    key={client.clientid}
+                    className="barber-card"
+                  >
+                    <CardContent className="p-5">
+
+                      {editingId === client.clientid ? (
+                        <>
+                          <div className="space-y-4">
+
+                            <div>
+                              <Label>Nome</Label>
+                              <Input
+                                value={editData.name}
+                                onChange={(e) =>
+                                  setEditData((d) => ({
+                                    ...d,
+                                    name: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <Label>Telefone</Label>
+                              <Input
+                                value={editData.phone}
+                                onChange={(e) =>
+                                  setEditData((d) => ({
+                                    ...d,
+                                    phone: formatPhone(e.target.value),
+                                  }))
+                                }
+                              />
+                            </div>
+
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3 mt-5">
+                            <Button
+                              variant="action"
+                              className="h-11 gap-2"
+                              onClick={() => saveEdit(client.clientid)}
+                            >
+                              <span>Salvar</span>
                             </Button>
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground" onClick={cancelEdit}>
-                              <X className="w-4 h-4" />
+
+                            <Button
+                              variant="outline"
+                              className="h-11 gap-2"
+                              onClick={cancelEdit}
+                            >
+                              <span>Cancelar</span>
                             </Button>
                           </div>
-                        ) : (
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={() => startEdit(client)}>
-                              <Pencil className="w-4 h-4" />
-                            </Button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="space-y-3">
+
+                            <div>
+                              <p className="text-xs text-muted-foreground">
+                                Nome
+                              </p>
+
+                              <p className="font-semibold text-foreground">
+                                {client.clientname}
+                              </p>
+                            </div>
+
+                            <div>
+                              <p className="text-xs text-muted-foreground">
+                                Telefone
+                              </p>
+
+                              <p className="text-primary font-medium">
+                                {client.clientphone}
+                              </p>
+                            </div>
+
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-3 mt-5">
                             <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                              variant="outline"
+                              className="h-11 gap-2"
+                              onClick={() => startEdit(client)}
+                            >
+                              <span>Editar</span>
+                            </Button>
+
+                            <Button
+                              variant="destructive"
+                              className="h-11 gap-2"
                               onClick={() => {
                                 setDeleteId(client.clientid);
-                                setShowConfirmDelete(true);
                               }}
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <span>Excluir</span>
                             </Button>
                           </div>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        </>
+                      )}
+
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+</>
             )}
           </CardContent>
         </Card>
@@ -270,9 +419,10 @@ const handleDelete = async () => {
 
       {/* Confirm Delete Dialog */}
       <ConfirmDialog
-        open={showConfirmDelete}
-        onOpenChange={setShowConfirmDelete}
-        title="Excluir Cliente"
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}title="Excluir Cliente"
         description="Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita."
         confirmText="Excluir"
         variant="destructive"
