@@ -126,9 +126,9 @@ const Categories = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="page-container animate-fade-in max-w-4xl">
-        <Card className="barber-card">
+        <Card className="barber-card overflow-hidden">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                   <Tag className="w-5 h-5 text-primary" />
@@ -138,12 +138,12 @@ const Categories = () => {
 
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="action" size="sm" className="gap-2">
+                  <Button variant="action" className="w-full sm:w-auto gap-2">
                     <Plus className="w-4 h-4" />
                     Nova Categoria
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-card border-border-subtle">
+                <DialogContent className="bg-card border-border-subtle w-[95vw] max-w-md rounded-xl">
                   <DialogHeader>
                     <DialogTitle className="text-foreground">Nova Categoria</DialogTitle>
                   </DialogHeader>
@@ -167,11 +167,12 @@ const Categories = () => {
                         onChange={(e) => setNewValue(e.target.value)}
                       />
                     </div>
-                    <div className="flex gap-3 pt-2">
-                      <Button variant="action" className="flex-1" onClick={handleCreate}>
+                    <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+                      
+                      <Button variant="action" className="w-full flex-1" onClick={handleCreate}>
                         Criar Categoria
                       </Button>
-                      <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                      <Button variant="outline" className= "w-full sm:w-auto" onClick={() => setDialogOpen(false)}>
                         Cancelar
                       </Button>
                     </div>
@@ -187,100 +188,238 @@ const Categories = () => {
                 Nenhuma categoria cadastrada.
               </p>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border-subtle">
-                    <TableHead>Descrição</TableHead>
-                    <TableHead className="w-32">Valor</TableHead>
-                    <TableHead className="w-24 text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-border-subtle">
+                      <TableHead>Descrição</TableHead>
+                      <TableHead className="w-32">Valor</TableHead>
+                      <TableHead className="w-24 text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {categories.map((cat) => (
+                      <TableRow key={cat.categoryid} className="border-border-subtle">
+                        <TableCell>
+                          {editingId === cat.categoryid ? (
+                            <Input
+                              value={editData.description}
+                              onChange={(e) =>
+                                setEditData((d) => ({
+                                  ...d,
+                                  description: e.target.value,
+                                }))
+                              }
+                              className="h-8"
+                            />
+                          ) : (
+                            <span className="text-foreground">{cat.categorydescription}</span>
+                          )}
+                        </TableCell>
+
+                        <TableCell>
+                          {editingId === cat.categoryid ? (
+                            <Input
+                              type="number"
+                              step="0.01"
+                              value={editData.value}
+                              onChange={(e) =>
+                                setEditData((d) => ({
+                                  ...d,
+                                  value: e.target.value,
+                                }))
+                              }
+                              className="h-8 w-24"
+                            />
+                          ) : (
+                            <span className="text-foreground font-medium">
+                              R$ {Number(cat.categoryvalue).toFixed(2)}
+                            </span>
+                          )}
+                        </TableCell>
+
+                        <TableCell className="text-right">
+                          {editingId === cat.categoryid ? (
+                            <div className="flex justify-end gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-green-400 hover:text-green-300"
+                                onClick={() => saveEdit(cat.categoryid)}
+                              >
+                                <Check className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground"
+                                onClick={cancelEdit}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex justify-end gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                onClick={() => startEdit(cat)}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                onClick={() => setDeleteId(cat.categoryid)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                </div>
+                <div className="space-y-4 md:hidden">
                   {categories.map((cat) => (
-                    <TableRow key={cat.categoryid} className="border-border-subtle">
-                      <TableCell>
-                        {editingId === cat.categoryid ? (
-                          <Input
-                            value={editData.description}
-                            onChange={(e) =>
-                              setEditData((d) => ({
-                                ...d,
-                                description: e.target.value,
-                              }))
-                            }
-                            className="h-8"
-                          />
-                        ) : (
-                          <span className="text-foreground">{cat.categorydescription}</span>
-                        )}
-                      </TableCell>
+                    <Card
+                      key={cat.categoryid}
+                      className="barber-card"
+                    >
+                      <CardContent className="p-5 space-y-5">
 
-                      <TableCell>
                         {editingId === cat.categoryid ? (
-                          <Input
-                            type="number"
-                            step="0.01"
-                            value={editData.value}
-                            onChange={(e) =>
-                              setEditData((d) => ({
-                                ...d,
-                                value: e.target.value,
-                              }))
-                            }
-                            className="h-8 w-24"
-                          />
-                        ) : (
-                          <span className="text-foreground font-medium">
-                            R$ {Number(cat.categoryvalue).toFixed(2)}
-                          </span>
-                        )}
-                      </TableCell>
+                          <div className="space-y-4">
 
-                      <TableCell className="text-right">
+                            <div>
+                              <Label className="mb-2 block">Descrição</Label>
+                              <Input
+                                value={editData.description}
+                                onChange={(e) =>
+                                  setEditData((d) => ({
+                                    ...d,
+                                    description: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <Label className="mb-2 block">Valor</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={editData.value}
+                                onChange={(e) =>
+                                  setEditData((d) => ({
+                                    ...d,
+                                    value: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                          </div>
+                        ) : (
+                        <div className="flex justify-between items-start gap-4">
+
+                          {/* Descrição */}
+                          <div className="flex-1">
+                            <p className="text-xs text-muted-foreground mb-1">
+                              Descrição
+                            </p>
+
+                            {editingId === cat.categoryid ? (
+                              <Input
+                                value={editData.description}
+                                onChange={(e) =>
+                                  setEditData((d) => ({
+                                    ...d,
+                                    description: e.target.value,
+                                  }))
+                                }
+                              />
+                            ) : (
+                              <p className="font-medium text-foreground">
+                                {cat.categorydescription}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Valor */}
+                          <div className="text-right min-w-[90px]">
+                            <p className="text-xs text-muted-foreground mb-1">
+                              Valor
+                            </p>
+
+                            {editingId === cat.categoryid ? (
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={editData.value}
+                                onChange={(e) =>
+                                  setEditData((d) => ({
+                                    ...d,
+                                    value: e.target.value,
+                                  }))
+                                }
+                              />
+                            ) : (
+                              <p className="font-semibold text-primary">
+                                R$ {Number(cat.categoryvalue).toFixed(2)}
+                              </p>
+                            )}
+                          </div>
+
+                        </div>
+                        )}
+                        {/* Botões */}
                         {editingId === cat.categoryid ? (
-                          <div className="flex justify-end gap-1">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-green-400 hover:text-green-300"
+                              variant="action"
                               onClick={() => saveEdit(cat.categoryid)}
                             >
-                              <Check className="w-4 h-4" />
+                              <span>Salvar</span>
                             </Button>
+
                             <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-muted-foreground"
+                              variant="outline"
                               onClick={cancelEdit}
                             >
-                              <X className="w-4 h-4" />
+                              <span>Cancelar</span>
                             </Button>
                           </div>
                         ) : (
-                          <div className="flex justify-end gap-1">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-muted-foreground hover:text-primary"
+                              variant="outline"
+                              className="h-11 text-sm"
                               onClick={() => startEdit(cat)}
                             >
-                              <Pencil className="w-4 h-4" />
+                              <span>Editar</span>
                             </Button>
+
                             <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                              variant="destructive"
+                              className="h-11 text-sm"
                               onClick={() => setDeleteId(cat.categoryid)}
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <span>Excluir</span>
                             </Button>
                           </div>
                         )}
-                      </TableCell>
-                    </TableRow>
+
+                      </CardContent>
+                    </Card>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
@@ -288,7 +427,11 @@ const Categories = () => {
 
       <ConfirmDialog
         open={deleteId !== null}
-        onOpenChange={setShowConfirmDelete}
+        onOpenChange={(open) => {
+            if (!open) {
+                setDeleteId(null);
+            }
+        }}
         title="Excluir Categoria"
         description="Tem certeza que deseja excluir esta categoria? Esta ação não pode ser desfeita."
         confirmText="Excluir"
