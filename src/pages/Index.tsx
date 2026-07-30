@@ -102,8 +102,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="page-container animate-fade-in">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+          <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
               <Scissors className="w-5 h-5 text-primary" />
             </div>
@@ -115,17 +115,24 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <DateSelector date={agendaDate} onDateChange={setAgendaDate} />
-            <Button
-              variant="action"
-              size="lg"
-              onClick={() => navigate("/create-service")}
-              className="gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Novo Serviço
-            </Button>
+           <div className="w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 lg:items-center">
+              <div className="w-full sm:flex-1 lg:w-52">
+                <DateSelector
+                  date={agendaDate}
+                  onDateChange={setAgendaDate}
+                />
+              </div>
+
+              <Button
+                variant="action"
+                onClick={() => navigate("/create-service")}
+                className="w-full sm:w-auto lg:px-6 gap-2 h-10 sm:h-11"
+              >
+                <Plus className="w-4 h-4" />
+                Novo Serviço
+              </Button>
+            </div>
           </div>
         </div>
 

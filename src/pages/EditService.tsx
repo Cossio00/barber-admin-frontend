@@ -181,7 +181,7 @@ const EditService = () => {
               </div>
 
               {/* DATA + HORÁRIO */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                 <div className="space-y-2">
 
@@ -196,7 +196,7 @@ const EditService = () => {
                       </Button>
                     </PopoverTrigger>
 
-                    <PopoverContent className="w-auto p-0">
+                    <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={date}
@@ -213,7 +213,7 @@ const EditService = () => {
 
                   <Label>Horário</Label>
 
-                  <div className="flex items-center gap-2 border rounded-md px-3 h-10">
+                  <div className="flex items-center gap-2 border rounded-md px-3 h-10 bg-background">
 
                     <Clock className="w-4 h-4 text-muted-foreground" />
 
@@ -239,15 +239,24 @@ const EditService = () => {
 
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={() => navigate(-1)}
+                >
+                  Cancelar
+                </Button>
 
-                <Button type="submit" variant="action" size="lg" className="flex-1" disabled={loading}>
-            {loading ? "Salvando..." : "Salvar Alterações"}
-          </Button>
-          <Button type="button" variant="outline" size="lg" onClick={() => navigate(-1)}>
-            Cancelar
-          </Button>
-
+                <Button
+                  type="submit"
+                  variant="action"
+                  className="w-full flex-1"
+                  disabled={loading}
+                >
+                  {loading ? "Salvando..." : "Salvar Alterações"}
+                </Button>
               </div>
 
             </form>

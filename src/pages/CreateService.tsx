@@ -139,7 +139,7 @@ const CreateService = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                 {/* DATA */}
                 <div className="space-y-2">
@@ -171,7 +171,7 @@ const CreateService = () => {
                 <div className="space-y-2">
                     <Label>Horário</Label>
 
-                    <div className="flex items-center gap-2 border rounded-md px-3 h-10">
+                    <div className="flex items-center gap-2 border rounded-md px-3 h-10 bg-background">
                     <Clock className="w-4 h-4 text-muted-foreground" />
 
                     <input
@@ -193,19 +193,25 @@ const CreateService = () => {
                     />
                     </div>
                 </div>
-
-</div>
-
-              <div className="flex gap-3 pt-4">
-                
               </div>
 
-              <div className="flex gap-3 pt-4">
-                <Button type="submit" variant="action" size="lg" className="flex-1" disabled={loading}>
-                  {loading ? "Agendando..." : "Agendar Serviço"}
-                </Button>
-                <Button type="button" variant="outline" size="lg" onClick={() => navigate(-1)}>
+              <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={() => navigate(-1)}
+                >
                   Cancelar
+                </Button>
+
+                <Button
+                  type="submit"
+                  variant="action"
+                  className="w-full flex-1"
+                  disabled={loading}
+                >
+                  {loading ? "Agendando..." : "Agendar Serviço"}
                 </Button>
               </div>
             </form>
