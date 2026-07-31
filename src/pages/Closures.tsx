@@ -117,37 +117,47 @@ const Closures = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="page-container animate-fade-in">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
               <FileText className="w-5 h-5 text-primary" />
             </div>
+
             <div>
               <h1 className="section-title">Fechamentos</h1>
-              <p className="text-muted-foreground text-sm">Histórico de faturamento mensal</p>
+              <p className="text-muted-foreground text-sm">
+                Histórico de faturamento mensal
+              </p>
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <Button variant="action" size="lg" className="gap-2" onClick={handleCloseLastMonth}>
-              <Lock className="w-4 h-4" />
-              Fechar Último Mês
+          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            <Button
+              variant="action"
+              className="w-full sm:flex-1 lg:w-auto gap-2 whitespace-nowrap"
+              onClick={handleCloseLastMonth}
+            >
+              <Lock className="w-4 h-4 shrink-0" />
+              <span>Fechar Último Mês</span>
             </Button>
 
             <Dialog open={isCloseDialogOpen} onOpenChange={setIsCloseDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="lg" className="gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Fechar Mês Específico
+                <Button
+                  variant="outline"
+                  className="w-full sm:flex-1 lg:w-auto gap-2 whitespace-nowrap"
+                >
+                  <Calendar className="w-4 h-4 shrink-0" />
+                  <span>Fechar Mês Específico</span>
                 </Button>
               </DialogTrigger>
 
-              <DialogContent className="sm:max-w-md">
+              <DialogContent className="w-[95vw] max-w-md rounded-xl">
                 <DialogHeader>
                   <DialogTitle>Fechar Mês Específico</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 py-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label>Mês</Label>
                       <Select value={String(selectedMonth)} onValueChange={(v) => setSelectedMonth(Number(v))}>
@@ -184,12 +194,21 @@ const Closures = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-3 pt-4">
-                    <Button variant="action" onClick={handleCloseSpecificMonth} className="flex-1">
-                      Confirmar Seleção
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsCloseDialogOpen(false)}>
+                  <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+                    <Button
+                      variant="outline"
+                      className="w-full sm:w-auto"
+                      onClick={() => setIsCloseDialogOpen(false)}
+                    >
                       Cancelar
+                    </Button>
+
+                    <Button
+                      variant="action"
+                      className="w-full flex-1"
+                      onClick={handleCloseSpecificMonth}
+                    >
+                      Confirmar Seleção
                     </Button>
                   </div>
                 </div>
@@ -201,7 +220,7 @@ const Closures = () => {
         {/* Lista de Fechamentos */}
         <div className="grid gap-4">
           {closures.length === 0 ? (
-            <p className="text-center text-muted-foreground py-12">
+            <p className="text-center text-muted-foreground py-12 text-sm sm:text-base">
               Nenhum fechamento realizado ainda.
             </p>
           ) : (
@@ -211,9 +230,8 @@ const Closures = () => {
                 <div
                   key={closure.closureid}
                   onClick={() => navigate(`/closure-overview/${closure.closureid}`)}
-                  className="barber-card flex items-center justify-between cursor-pointer group"
-                >
-                  <div className="flex items-center gap-4">
+                  className="barber-card cursor-pointer group p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                     <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                       <span className="text-primary font-bold text-sm">{month}</span>
                     </div>
@@ -226,8 +244,8 @@ const Closures = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-lg font-bold text-primary">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+                    <span className="text-base sm:text-lg font-bold text-primary">
                       {formatBRL(closure.closuretotalcalculated)}
                     </span>
                     <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary" />
