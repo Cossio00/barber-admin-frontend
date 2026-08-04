@@ -12,8 +12,6 @@ import { CalendarIcon, Clock, ArrowLeft, Scissors } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/services/api";
 
-
-
 const CreateService = () => {
   const navigate = useNavigate();
   
@@ -28,15 +26,15 @@ const CreateService = () => {
 
   useEffect(() => {
     Promise.all([
-        api.get("/client"),
-        api.get("/category")
+      api.get("/client"),
+      api.get("/category")
     ])
     .then(([clientsRes, categoriesRes]) => {
-        setClients(clientsRes.data.list ?? clientsRes.data.clients ?? [])
-        setCategories(categoriesRes.data.list ?? categoriesRes.data.categories ?? [])
+      setClients(clientsRes.data.list ?? clientsRes.data.clients ?? []);
+      setCategories(categoriesRes.data.list ?? categoriesRes.data.categories ?? []);
     })
-    .catch(err => console.error(err))
-    }, [])
+    .catch(err => console.error(err));
+  }, []);
 
   const selectedCategory = categories.find((c) => String(c.categoryid) === categoryId);
 
@@ -51,11 +49,9 @@ const CreateService = () => {
     setLoading(true);
 
     try {
-
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const day = String(date.getDate()).padStart(2, "0");
-
       const [hour, minute] = time.split(":");
 
       const formattedDate = `${year}-${month}-${day} ${hour}:${minute}:00`;
@@ -66,16 +62,18 @@ const CreateService = () => {
         servicedate: formattedDate,
       });
 
-      toast.success("Serviço agendado com sucesso!");
+      toast.success("Serviço agendado com sucesso!", {
+        description: "O agendamento foi criado com sucesso.",
+      });
+
       navigate("/");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Erro ao agendar serviço");
+      toast.error(err?.response?.data?.message || "Erro ao agendar serviço");
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-background">
@@ -141,7 +139,7 @@ const CreateService = () => {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                 {/* DATA */}
                 <div className="space-y-2">
@@ -173,7 +171,7 @@ const CreateService = () => {
                 <div className="space-y-2">
                     <Label>Horário</Label>
 
-                    <div className="flex items-center gap-2 border rounded-md px-3 h-10">
+                    <div className="flex items-center gap-2 border rounded-md px-3 h-10 bg-background">
                     <Clock className="w-4 h-4 text-muted-foreground" />
 
                     <input
@@ -195,15 +193,25 @@ const CreateService = () => {
                     />
                     </div>
                 </div>
+              </div>
 
-</div>
-
-              <div className="flex gap-3 pt-4">
-                <Button type="submit" variant="action" size="lg" className="flex-1" disabled={loading}>
-                  {loading ? "Agendando..." : "Agendar Serviço"}
-                </Button>
-                <Button type="button" variant="outline" size="lg" onClick={() => navigate(-1)}>
+              <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  onClick={() => navigate(-1)}
+                >
                   Cancelar
+                </Button>
+
+                <Button
+                  type="submit"
+                  variant="action"
+                  className="w-full flex-1"
+                  disabled={loading}
+                >
+                  {loading ? "Agendando..." : "Agendar Serviço"}
                 </Button>
               </div>
             </form>

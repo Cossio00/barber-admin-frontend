@@ -31,7 +31,14 @@ export const AgendaTable = ({ services, onStatusChange, onEdit, onDelete }: Agen
     .reduce((acc, s) => acc + Number(s.categoryvalue || 0), 0);
 
   return (
-    <div className="table-container">
+
+
+    <>
+  {/* Desktop */}
+  <div className="table-container hidden md:block">
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <div className="table-container">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -128,5 +135,123 @@ export const AgendaTable = ({ services, onStatusChange, onEdit, onDelete }: Agen
         </table>
       </div>
     </div>
+      </table>
+    </div>
+  </div>
+
+  {/* Mobile */}
+  <div className="space-y-4 md:hidden">
+    {services.map((service, index) => {
+      const horario = new Date(service.servicedate).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+
+      return (
+        <div
+          key={service.serviceid}
+          className={`barber-card ${
+            service.servicestatus === "cancelado"
+              ? "opacity-50"
+              : ""
+          }`}
+        >
+          <div className="space-y-3">
+
+            <div className="flex justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">
+                  Horário
+                </p>
+
+                <p className="font-semibold">
+                  {horario}
+                </p>
+              </div>
+
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground">
+                  Valor
+                </p>
+
+                <p className="font-semibold text-primary">
+                  {formatBRL(service.categoryvalue)}
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground">
+                Cliente
+              </p>
+
+              <p className="font-medium">
+                {service.clientname}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs text-muted-foreground">
+                Serviço
+              </p>
+
+              <p>
+                {service.servicecategory}
+              </p>
+            </div>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Status
+              </p>
+
+              <StatusSelect
+                value={service.servicestatus}
+                onChange={(val) =>
+                  onStatusChange(service.serviceid, val)
+                }
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <Button
+                variant="outline"
+                className="h-11 gap-2"
+                onClick={() => onEdit(service.serviceid)}
+              >
+                <Pencil className="w-4 h-4" />
+                Editar
+              </Button>
+
+              <Button
+                variant="destructive"
+                className="h-11 gap-2"
+                onClick={() => onDelete(service.serviceid)}
+              >
+                <Trash2 className="w-4 h-4" />
+                Excluir
+              </Button>
+            </div>
+
+          </div>
+        </div>
+      );
+    })}
+
+    <div className="barber-card border-primary/30">
+      <div className="flex justify-between items-center">
+        <span className="font-semibold">
+          Total concluído
+        </span>
+
+        <span className="text-lg font-bold text-primary">
+          {formatBRL(totalValue)}
+        </span>
+      </div>
+    </div>
+  </div>
+</>
+    
   );
 };

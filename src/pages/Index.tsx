@@ -7,10 +7,9 @@ import { Button } from "@/components/ui/button";
 import { AgendaTable } from "@/components/agenda/AgendaTable";
 import { DailyStats } from "@/components/agenda/DailyStats";
 import { DateSelector } from "@/components/agenda/DateSelector";
-import { DeleteServiceDialog } from "@/components/agenda/DeleteServiceDialog";
 import api from "@/services/api";
-
-
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export type ServiceItem = {
   serviceid: string;
@@ -33,37 +32,45 @@ const Index = () => {
     : `Agenda de ${format(agendaDate, "dd/MM", { locale: ptBR })}`;
 
   const handleStatusChange = async (serviceId: string, newStatus: string) => {
-  try {
-    await api.put(`/service-status/${serviceId}`, {
-      servicestatus: newStatus,
-    });
+    try {
+      await api.put(`/service-status/${serviceId}`, {
+        servicestatus: newStatus,
+      });
 
-    setServices((prev) =>
-      prev.map((item) =>
-        item.serviceid === serviceId
-          ? { ...item, servicestatus: newStatus }
-          : item
-      )
-    );
-  } catch (err) {
-    console.error("Erro ao atualizar status:", err);
-  }
-};
+      setServices((prev) =>
+        prev.map((item) =>
+          item.serviceid === serviceId
+            ? { ...item, servicestatus: newStatus }
+            : item
+        )
+      );
+
+      toast.success("Status atualizado com sucesso!");
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Erro ao atualizar status";
+      toast.error(message);
+    }
+  };
 
   const handleDelete = async () => {
-  try {
-    await api.delete(`/service/${selectedServiceId}`);
+    if (!selectedServiceId) return;
 
-    setServices((prev) =>
-      prev.filter((item) => item.serviceid !== selectedServiceId)
-    );
+    try {
+      await api.delete(`/service/${selectedServiceId}`);
 
-    setDeleteDialogOpen(false);
-    setSelectedServiceId("");
-  } catch (err) {
-    console.error("Erro ao deletar:", err);
-  }
-};
+      setServices((prev) =>
+        prev.filter((item) => item.serviceid !== selectedServiceId)
+      );
+
+      toast.success("Serviço removido com sucesso!");
+    } catch (err: any) {
+      const message = err?.response?.data?.message || "Erro ao deletar serviço";
+      toast.error(message);
+    } finally {
+      setDeleteDialogOpen(false);
+      setSelectedServiceId("");
+    }
+  };
 
   const handleOpenDelete = (id: string) => {
     setSelectedServiceId(id);
@@ -76,27 +83,27 @@ const Index = () => {
 
   const totalAgendado = services.filter((s) => s.servicestatus === "agendado").length;
   const totalConcluidos = services.filter((s) => s.servicestatus === "concluido").length;
-  
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const response = await api.post("/service-agenda", {
-        date: `${agendaDate.getFullYear()}-${agendaDate.getMonth() + 1}-${agendaDate.getDate()}`
-      });
-      setServices(response.data.services);
-    } catch (err) {
-      console.error("Erro ao buscar serviços:", err);
-    }
-  };
-  fetchServices();}, [agendaDate]);
-
+          date: `${agendaDate.getFullYear()}-${agendaDate.getMonth() + 1}-${agendaDate.getDate()}`
+        });
+        setServices(response.data.services || []);
+      } catch (err) {
+        console.error("Erro ao buscar serviços:", err);
+        toast.error("Erro ao carregar agenda");
+      }
+    };
+    fetchServices();
+  }, [agendaDate]);
 
   return (
     <div className="min-h-screen bg-background">
       <div className="page-container animate-fade-in">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+          <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-3">
             <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
               <Scissors className="w-5 h-5 text-primary" />
             </div>
@@ -108,21 +115,27 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <DateSelector date={agendaDate} onDateChange={setAgendaDate} />
-            <Button
-              variant="action"
-              size="lg"
-              onClick={() => navigate("/create-service")}
-              className="gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Novo Serviço
-            </Button>
+           <div className="w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 lg:items-center">
+              <div className="w-full sm:flex-1 lg:w-52">
+                <DateSelector
+                  date={agendaDate}
+                  onDateChange={setAgendaDate}
+                />
+              </div>
+
+              <Button
+                variant="action"
+                onClick={() => navigate("/create-service")}
+                className="w-full sm:w-auto lg:px-6 gap-2 h-10 sm:h-11"
+              >
+                <Plus className="w-4 h-4" />
+                Novo Serviço
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Stats */}
         <DailyStats
           total={totalConcluido}
           agendados={totalAgendado}
@@ -130,7 +143,6 @@ const Index = () => {
           totalServicos={services.length}
         />
 
-        {/* Table */}
         <AgendaTable
           services={services}
           onStatusChange={handleStatusChange}
@@ -138,10 +150,13 @@ const Index = () => {
           onDelete={handleOpenDelete}
         />
 
-        {/* Delete Dialog */}
-        <DeleteServiceDialog
+        <ConfirmDialog
           open={deleteDialogOpen}
-          onClose={() => setDeleteDialogOpen(false)}
+          onOpenChange={setDeleteDialogOpen}
+          title="Excluir Serviço"
+          description="Tem certeza que deseja excluir este serviço? Esta ação não pode ser desfeita."
+          confirmText="Excluir"
+          variant="destructive"
           onConfirm={handleDelete}
         />
       </div>
