@@ -2,7 +2,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3010',   
+  baseURL: 'https://barber-admin-backend.onrender.com',   
 });
 
 api.interceptors.request.use((config) => {
